@@ -1,0 +1,34 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int           @id @default(autoincrement())
+  email             String        @unique
+  name              String
+  password          String 
+  isConfirmed       Boolean       @default(false)
+  confirmationToken String?       @unique
+  resetToken        String?       @unique
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  refreshTokens     RefreshToken[]    // связь 1 к многим, один пользователь может иметь несколько refresh токенов
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([token])
+}

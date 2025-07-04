@@ -1,0 +1,158 @@
+/* LoginPage.module.css */
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: linear-gradient(135deg, #4c6ef5, #15aabf);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  color: #222;
+  text-align: center;
+  user-select: none;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  font-size: 1.1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  background-color: #fafafa;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4c6ef5;
+  box-shadow: 0 0 8px rgba(76, 110, 245, 0.6);
+  background-color: white;
+}
+
+.buttonPrimary {
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 12px;
+  background-color: #4c6ef5;
+  color: white;
+  font-weight: 700;
+  font-size: 1.15rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  user-select: none;
+}
+
+.buttonPrimary:disabled {
+  background-color: #a6b8ff;
+  cursor: not-allowed;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background-color: #395ac7;
+}
+
+.message {
+  margin-top: 20px;
+  color: #e03131;
+  min-height: 28px;
+  text-align: center;
+  font-weight: 600;
+  user-select: none;
+}
+
+.footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.switchButton {
+  background: none;
+  border: none;
+  color: #4c6ef5;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: color 0.3s;
+  user-select: none;
+  padding: 0;
+}
+
+.switchButton:disabled {
+  color: #a6b8ff;
+  cursor: not-allowed;
+}
+
+.switchButton:hover:not(:disabled) {
+  color: #395ac7;
+}
+
+
+@media (max-width: 480px) {
+  .container {
+    padding: 2.5rem 1.5rem;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input {
+    font-size: 1rem;
+    padding: 12px 14px;
+    margin-bottom: 15px;
+  }
+
+  .buttonPrimary {
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+
+  .footer {
+    margin-top: 20px;
+  }
+
+  .switchButton {
+    font-size: 1rem;
+  }
+}
