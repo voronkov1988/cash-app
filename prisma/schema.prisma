@@ -19,7 +19,7 @@ model User {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
-  refreshTokens     RefreshToken[]    // связь 1 к многим, один пользователь может иметь несколько refresh токенов
+  refreshTokens     RefreshToken[] 
 }
 
 model RefreshToken {

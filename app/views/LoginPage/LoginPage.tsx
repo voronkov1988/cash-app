@@ -12,7 +12,6 @@ export const LoginPage = () => {
   const { user, login, loading, isInitialized } = useAuth();
   const router = useRouter();
 
-  // После успешного логина (появляется user) - редиректим
   useEffect(() => {
     if (isInitialized && user) {
       router.replace("/user/profile");
@@ -31,9 +30,8 @@ export const LoginPage = () => {
     return <p>Загрузка...</p>;
   }
 
-  // Если пользователь уже авторизован, показывать форму не нужно (редирект выше)
   if (user) {
-    return <p>...Переход...</p>;
+    return <p>загрука...</p>;
   }
 
   return (

@@ -26,143 +26,146 @@
     --button-secondary-hover: #1a1a1a;
   }
 }
-
-.main {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1a1a1a;
 }
 
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  background: linear-gradient(135deg, #4a90e2 0%, #50e3c2 100%);
+  color: white;
+  border-radius: 12px;
+  margin-bottom: 80px;
 }
 
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
+.title {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+  font-weight: 700;
 }
 
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-100);
-  padding: 2px 4px;
-  border-radius: 4px;
+.subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 32px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.ctaButton {
+  background-color: #fff;
+  color: #4a90e2;
   font-weight: 600;
-}
-
-.ctas {
-  display: flex;
-  gap: 16px;
-}
-
-.ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
   border: none;
-  border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+  border-radius: 30px;
+  padding: 14px 40px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
+  font-size: 1.25rem;
+  box-shadow: 0 8px 15px rgba(74, 144, 226, 0.3);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a.primary {
-  background: var(--foreground);
-  color: var(--background);
-  gap: 8px;
+.ctaButton:hover {
+  background-color: #4a90e2;
+  color: white;
 }
 
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 158px;
+.features {
+  margin-bottom: 80px;
+  text-align: center;
 }
 
-.footer {
-  grid-row-start: 3;
-  display: flex;
-  gap: 24px;
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 48px;
+  font-weight: 700;
+  color: #333;
 }
 
-.footer a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+  padding: 0 10px;
 }
 
-.footer img {
-  flex-shrink: 0;
+.card {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(74, 144, 226, 0.2);
 }
+
+.cardTitle {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #4a90e2;
+}
+
+.cardDescription {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.callToAction {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #4a90e2;
+  color: white;
+  border-radius: 12px;
+}
+
+.callToAction .sectionTitle {
+  color: white;
+  margin-bottom: 32px;
+}
+
+.callToAction .ctaButton {
+  background-color: white;
+  color: #4a90e2;
+  padding: 16px 48px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: 40px;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
+.callToAction .ctaButton:hover {
+  background-color: #357ABD;
+  color: white;
+}
+
+/* Responsive */
 
 @media (max-width: 600px) {
-  .page {
-    padding: 32px;
-    padding-bottom: 80px;
+  .title {
+    font-size: 2.5rem;
   }
 
-  .main {
-    align-items: center;
+  .subtitle {
+    font-size: 1rem;
   }
 
-  .main ol {
-    text-align: center;
+  .ctaButton {
+    font-size: 1rem;
+    padding: 12px 28px;
   }
 
-  .ctas {
-    flex-direction: column;
-  }
-
-  .ctas a {
-    font-size: 14px;
-    height: 40px;
-    padding: 0 16px;
-  }
-
-  a.secondary {
-    min-width: auto;
-  }
-
-  .footer {
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
+  .sectionTitle {
+    font-size: 1.5rem;
   }
 }

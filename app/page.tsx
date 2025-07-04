@@ -1,137 +1,55 @@
+'use client'
+
+import { useRouter } from 'next/navigation';
+import styles from './page.module.css'
+
 export default function Home () {
+  const router = useRouter()
+
   return (
-    <main>
-      mainPage
+    <main className={styles.container}>
+      <section className={styles.hero}>
+        <h1 className={styles.title}>Финансовый трекер</h1>
+        <p className={styles.subtitle}>
+          Контролируйте свои доходы и расходы, достигайте финансовых целей легко и удобно.
+        </p>
+        <button onClick={()=>router.push('/auth/register')} className={styles.ctaButton}>Начать бесплатно</button>
+      </section>
+
+      <section className={styles.features}>
+        <h2 className={styles.sectionTitle}>Возможности приложения</h2>
+        <div className={styles.cards}>
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Отслеживание расходов</h3>
+            <p className={styles.cardDescription}>
+              Записывайте все свои траты и распределяйте по категориям.
+            </p>
+          </div>
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Аналитика и отчёты</h3>
+            <p className={styles.cardDescription}>
+              Получайте отчёты и графики по своим финансам для успеха.
+            </p>
+          </div>
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Планирование бюджета</h3>
+            <p className={styles.cardDescription}>
+              Создавайте бюджеты и следите за их исполнением каждый месяц.
+            </p>
+          </div>
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Напоминания и уведомления</h3>
+            <p className={styles.cardDescription}>
+              Никогда не забывайте о важных платежах и финансовых целях.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.callToAction}>
+        <h2 className={styles.sectionTitle}>Начните контролировать свои финансы сегодня</h2>
+        <button className={styles.ctaButton}>Зарегистрироваться</button>
+      </section>
     </main>
-  )
+  );
 }
-
-
-
-// "use client";
-
-// import { useState } from "react";
-
-// export default function AuthPage() {
-//   const [mode, setMode] = useState<"login" | "register">("login");
-//   const [email, setEmail] = useState("");
-//   const [name, setName] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [message, setMessage] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   async function handleRegister() {
-//     setMessage("");
-//     setLoading(true);
-//     try {
-//       const res = await fetch("/api/user/register", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ email, password, name }),
-//       });
-//       const data = await res.json();
-//       if (!res.ok) throw new Error(data.error || "Ошибка регистрации");
-//       setMessage("Регистрация прошла успешно! Проверьте почту для подтверждения.");
-//       setEmail("");
-//       setPassword("");
-//       setName("");
-//       setMode("login");
-//     } catch (error: any) {
-//       setMessage(error.message || "Ошибка");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   async function handleLogin() {
-//     setMessage("");
-//     setLoading(true);
-//     try {
-//       const res = await fetch("/api/user/login", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ email, password }),
-//       });
-//       const data = await res.json();
-//       if (!res.ok) throw new Error(data.error || "Ошибка входа");
-//       setMessage(`Добро пожаловать, ${data.user.name}!`);
-//       // TODO: Сохранить токен в cookie/localStorage и перенаправить пользователя
-//       setEmail("");
-//       setPassword("");
-//     } catch (error: any) {
-//       setMessage(error.message || "Ошибка");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   return (
-//     <main style={{ maxWidth: 400, margin: "auto", padding: 20 }}>
-//       <h1>{mode === "login" ? "Вход" : "Регистрация"}</h1>
-
-//       {mode === "register" && (
-//         <input
-//           type="text"
-//           placeholder="Имя"
-//           value={name}
-//           onChange={(e) => setName(e.target.value)}
-//           style={{ width: "100%", marginBottom: 10, padding: 8 }}
-//           disabled={loading}
-//         />
-//       )}
-
-//       <input
-//         type="email"
-//         placeholder="Email"
-//         value={email}
-//         onChange={(e) => setEmail(e.target.value)}
-//         style={{ width: "100%", marginBottom: 10, padding: 8 }}
-//         disabled={loading}
-//       />
-
-//       <input
-//         type="password"
-//         placeholder="Пароль"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//         style={{ width: "100%", marginBottom: 10, padding: 8 }}
-//         disabled={loading}
-//       />
-
-//       {mode === "login" ? (
-//         <button
-//           onClick={handleLogin}
-//           disabled={!email || !password || loading}
-//           style={{ width: "100%", padding: 10 }}
-//         >
-//           Войти
-//         </button>
-//       ) : (
-//         <button
-//           onClick={handleRegister}
-//           disabled={!email || !password || !name || loading}
-//           style={{ width: "100%", padding: 10 }}
-//         >
-//           Зарегистрироваться
-//         </button>
-//       )}
-
-//       <p style={{ marginTop: 20, color: "red" }}>{message}</p>
-
-//       <footer style={{ marginTop: 20, display: "flex", justifyContent: "space-between" }}>
-//         {mode === "login" ? (
-//           <>
-//             <button onClick={() => setMode("register")} disabled={loading} style={{ cursor: "pointer" }}>
-//               Регистрация
-//             </button>
-
-//           </>
-//         ) : (
-//           <button onClick={() => setMode("login")} disabled={loading} style={{ cursor: "pointer" }}>
-//             Войти
-//           </button>
-//         )}
-//       </footer>
-//     </main>
-//   );
-// }
