@@ -42,7 +42,6 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
   }
 
   if (!user) {
-    // Редирект происходит, а пока — просто ничего не рендерим
     return null;
   }
 

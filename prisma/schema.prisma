@@ -8,18 +8,24 @@ generator client {
 }
 
 model User {
-  id                Int           @id @default(autoincrement())
-  email             String        @unique
+  id                Int             @id @default(autoincrement())
+  email             String          @unique
   name              String
   password          String 
-  isConfirmed       Boolean       @default(false)
-  confirmationToken String?       @unique
-  resetToken        String?       @unique
+  isConfirmed       Boolean         @default(false)
+  confirmationToken String?         @unique
+  resetToken        String?         @unique
   resetTokenExpiry  DateTime?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  refreshTokens     RefreshToken[] 
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  accounts          Account[]
+  categories        Category[]
+  transactions      Transaction[]
+  budgets           Budget[]
+  goals             Goal[]
+  loans             Loan[]
+  investments       Investment[]
+  refreshTokens     RefreshToken[]
 }
 
 model RefreshToken {
@@ -31,4 +37,152 @@ model RefreshToken {
   expiresAt DateTime
 
   @@index([token])
+}
+
+// Счета пользователя (банковские, наличные и т.д.)
+model Account {
+  id           Int           @id @default(autoincrement())
+  name         String        // Название счета (Сбербанк, Наличные)
+  type         AccountType   // Тип счета
+  balance      Float         @default(0)
+  currency     String        @default("RUB")
+  color        String        @default("#3B82F6") // Цвет для визуализации
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+enum AccountType {
+  CASH
+  BANK
+  CREDIT_CARD
+  INVESTMENT
+  SAVINGS
+}
+
+// Категории транзакций
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String        // Продукты, Транспорт, Зарплата...
+  type          CategoryType  @default(EXPENSE)
+  color         String        @default("#6B7280")
+  icon          String?       // Иконка для UI
+  user          User          @relation(fields: [userId], references: [id])
+  userId        Int
+  transactions  Transaction[]
+  budgets       Budget[]
+  parent        Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId      Int?
+  children      Category[]    @relation("CategoryHierarchy")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([name, userId])
+  @@index([userId])
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+// Финансовые транзакции
+model Transaction {
+  id          Int         @id @default(autoincrement())
+  amount      Float
+  date        DateTime    @default(now())
+  description String?
+  type        CategoryType
+  account     Account     @relation(fields: [accountId], references: [id])
+  accountId   Int
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  categoryId  Int?
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, date])
+}
+
+// Бюджеты по категориям
+model Budget {
+  id          Int       @id @default(autoincrement())
+  amount      Float
+  startDate   DateTime
+  endDate     DateTime
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([categoryId, startDate, endDate])
+  @@index([userId])
+}
+
+// Финансовые цели
+model Goal {
+  id          Int         @id @default(autoincrement())
+  name        String
+  targetAmount Float
+  currentAmount Float     @default(0)
+  targetDate  DateTime?
+  icon        String?     // Иконка для UI
+  color       String      @default("#8B5CF6")
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+// Кредиты и займы
+model Loan {
+  id            Int       @id @default(autoincrement())
+  name          String    // Ипотека, Автокредит...
+  amount        Float     // Сумма кредита
+  interestRate  Float     // Процентная ставка
+  term          Int       // Срок в месяцах
+  monthlyPayment Float    // Ежемесячный платеж
+  startDate     DateTime
+  endDate       DateTime
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+// Инвестиции и вклады
+model Investment {
+  id            Int         @id @default(autoincrement())
+  name          String      // Вклад Сбербанк, Портфель акций...
+  type          InvestmentType
+  amount        Float       // Инвестированная сумма
+  currentValue  Float?      // Текущая стоимость
+  interestRate  Float?      // Процентная ставка (для депозитов)
+  startDate     DateTime
+  endDate       DateTime?
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+enum InvestmentType {
+  DEPOSIT      // Банковский вклад
+  STOCKS       // Фондовый рынок
+  CRYPTO       // Криптовалюты
+  REAL_ESTATE  // Недвижимость
+  OTHER
 }
