@@ -13,6 +13,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   loading: boolean;
   isInitialized: boolean;
+  refreshToken: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,25 +23,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
-    async function checkUser() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/user/me", { credentials: "include" });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-        setIsInitialized(true);
+  const refreshToken = async (): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/user/auth/refresh', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        await checkUser();
+        return true;
       }
+      return false;
+    } catch (error) {
+      console.error('Ошибка обновления токена:', error);
+      return false;
     }
+  };
+
+  const checkUser = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/user/me", { 
+        credentials: "include",
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
+      
+      if (res.status === 401) {
+        // Пробуем обновить токен
+        const refreshed = await refreshToken();
+        if (refreshed) {
+          await checkUser();
+          return;
+        }
+        // throw new Error('Сессия истекла');
+      }
+      
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+      throw error;
+    } finally {
+      setLoading(false);
+      setIsInitialized(true);
+    }
+  };
+
+  useEffect(() => {
     checkUser();
+
+    // Интервал для проверки активности сессии
+    const interval = setInterval(() => {
+      checkUser().catch(console.error);
+    }, 5 * 60 * 1000); // Проверка каждые 5 минут
+
+    return () => clearInterval(interval);
   }, []);
 
   async function login(email: string, password: string) {
@@ -52,14 +96,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password }),
         credentials: "include",
       });
+      
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Ошибка входа");
       }
+      
       const data = await res.json();
       setUser(data.user);
       return true;
     } catch (error: any) {
+      console.error("Ошибка входа:", error);
       setUser(null);
       return false;
     } finally {
@@ -74,15 +121,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         method: "POST",
         credentials: "include",
       });
-    } catch {
-      // можно логировать ошибку
+    } catch (error) {
+      console.error("Ошибка выхода:", error);
     } finally {
       setUser(null);
       setLoading(false);
     }
   }
 
-  const value = { user, login, logout, loading, isInitialized };
+  const value = { user, login, logout, loading, isInitialized, refreshToken };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
