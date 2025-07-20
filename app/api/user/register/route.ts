@@ -51,6 +51,13 @@ export async function POST(request: Request) {
         isConfirmed: false,
       },
     });
+    // await prisma.account.create({
+    //   data: {
+    //     name,
+    //     userId: user.id,
+    //     type: 'CASH'
+    //   },
+    // });
 
     await sendConfirmationEmail(email, confirmationToken);
 
