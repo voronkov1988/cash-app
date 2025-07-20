@@ -28,17 +28,7 @@ model User {
   refreshTokens     RefreshToken[]
 }
 
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-
-  @@index([token])
-}
-
+// Счета пользователя (банковские, наличные и т.д.)
 model Account {
   id           Int           @id @default(autoincrement())
   name         String       
@@ -53,6 +43,19 @@ model Account {
 
   @@index([userId])
 }
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([token])
+}
+
+
 
 enum AccountType {
   CASH
