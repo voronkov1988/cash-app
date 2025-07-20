@@ -72,7 +72,6 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    console.error("Ошибка входа:", error);
     return NextResponse.json({ error: "Ошибка входа" }, { status: 500 });
   }
 }

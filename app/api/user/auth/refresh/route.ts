@@ -101,7 +101,6 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    console.error("Ошибка обновления токена:", error);
     return NextResponse.json(
       { error: "Ошибка обновления токена" }, 
       { status: 500 }

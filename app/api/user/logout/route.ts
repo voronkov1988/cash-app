@@ -49,7 +49,6 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    console.error("Ошибка выхода:", error);
     return NextResponse.json({ error: "Ошибка выхода" }, { status: 500 });
   }
 }

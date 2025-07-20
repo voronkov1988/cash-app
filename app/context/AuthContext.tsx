@@ -36,7 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return false;
     } catch (error) {
-      console.error('Ошибка обновления токена:', error);
       return false;
     }
   };
@@ -106,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(data.user);
       return true;
     } catch (error: any) {
-      console.error("Ошибка входа:", error);
       setUser(null);
       return false;
     } finally {
