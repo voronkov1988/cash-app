@@ -18,7 +18,6 @@ export async function POST(request: Request) {
   const userId = 1; // заменить на userId из сессии
   try {
     const { name, password } = await request.json();
-    console.log(name, password);
     
 
     if (!name || !password) {
@@ -34,7 +33,6 @@ export async function POST(request: Request) {
         userId,
       },
     });
-    console.log(account);
     
     return NextResponse.json(account, { status: 201 });
   } catch (error) {

@@ -16,9 +16,9 @@ export function UserSwitch({user}: UserSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [addUser, setAddUser] = useState(false)
 
-  useEffect(() => {
-    fetch(`/api/user/me`).then(res => res.json()).then(console.log)
-  } , [])
+  // useEffect(() => {
+  //   fetch(`/api/user/me`).then(res => res.json()).then(console.log)
+  // } , [])
   
   return (
     <div className={styles.userSwitcher}>

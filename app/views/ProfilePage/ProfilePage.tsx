@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ProfilePage.module.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAccount } from '@/app/context/AccountContext';
+import { AccountLoginForm } from '@/app/components/AccountLoginForm/AccountLoginForm';
+import { useAuth } from '@/app/context/AuthContext';
 type TransactionType = "INCOME" | "EXPENSE";
 interface Category {
   id: number;
@@ -17,6 +20,8 @@ interface Account {
 }
 
 export const ProfilePage = () => {
+  const { user } = useAuth();
+  const { account, setAccount } = useAccount();
   // Транзакции
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -144,7 +149,6 @@ export const ProfilePage = () => {
         accountId: accountId ?? 1,
         categoryId: categoryId,
       };
-      console.log(body);
       
       const res = await fetch("/api/transactions", {
         method: "POST",
@@ -219,6 +223,11 @@ if (!accountsLoading && accounts.length === 0) {
         </form>
       </div>
     );
+  }
+  
+
+  if (!account && user) {
+    return <AccountLoginForm onSuccess={setAccount} id={user.id} />;
   }
 
 
@@ -316,7 +325,7 @@ if (!accountsLoading && accounts.length === 0) {
             </label>
           </div>
           {/* Опционально: выбор счета */}
-          {/* <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 12 }}>
             <label>
               Счёт:
               <select
@@ -329,7 +338,7 @@ if (!accountsLoading && accounts.length === 0) {
                 // сюда добавьте аккаунты из БД
               </select>
             </label>
-          </div> */}
+          </div>
           <button type="submit" disabled={loading} style={{ marginRight: 12 }}>
             {loading ? "Сохраняем..." : "Добавить"}
           </button>
