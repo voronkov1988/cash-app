@@ -2,8 +2,9 @@
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
-import { UserSwitch } from "../components/UserSwitch/UserSwitch";
+// import { UserSwitch } from "../components/UserSwitch/UserSwitch";
 import Link from "next/link";
+
 
 const nav = [
   { id: 1, name: 'Главная', url: '/user/profile' },
@@ -40,7 +41,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
     <>
       <header style={{ padding: "1rem", borderBottom: "1px solid #ddd", marginBottom: "1.5rem", display: "flex", justifyContent: "space-around", alignItems: "center" }}>
         {/* <h1>Добро пожаловать, {user.name}</h1> */}
-        <UserSwitch user={user} />
+        
         <nav>
           {nav.map((item) => (
             <Link key={item.id} href={item.url}>{item.name}</Link>

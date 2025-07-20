@@ -1,68 +1,231 @@
-.userSwitcher {
+.container {
+  position: relative;
+}
+
+.label {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.invitationBadge {
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switcher {
   position: relative;
 }
 
 .currentUser {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #000;
-  padding: 10px 15px;
-  border-radius: 25px;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s;
 }
 
 .currentUser:hover {
-  background: rgba(255, 255, 255, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
   border-radius: 50%;
-  background: white;
-  color: #667eea;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
   font-weight: 600;
-  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
 }
 
 .userName {
+  font-size: 14px;
   font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 2px;
 }
 
-.arrow {
-  font-size: 0.8rem;
-  transition: transform 0.3s ease;
+.userEmail {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdownIcon {
+  font-size: 12px;
+  color: #64748b;
+  transition: transform 0.2s;
 }
 
 .dropdown {
   position: absolute;
   top: 100%;
+  left: 0;
   right: 0;
-  margin-top: 5px;
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  min-width: 200px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  margin-top: 4px;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-.dropdownItem {
+.userOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
   padding: 12px 16px;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
-  color: #374151;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.userOption:hover {
+  background: #f8fafc;
+}
+
+.userOption.active {
+  background: #eff6ff;
+}
+
+.checkIcon {
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 8px 0;
+}
+
+.sectionTitle {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.invitationItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.invitationInfo {
+  flex: 1;
+}
+
+.invitationTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.invitationFrom {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.invitationActions {
+  display: flex;
+  gap: 8px;
+}
+
+.acceptButton,
+.rejectButton {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acceptButton {
+  background: #10b981;
+  color: white;
+}
+
+.rejectButton {
+  background: #ef4444;
+  color: white;
+}
+
+.addUserButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #3b82f6;
+  font-size: 14px;
   font-weight: 500;
 }
 
-.dropdownItem:hover {
-  background: #f3f4f6;
+.addUserButton:hover {
+  background: #f8fafc;
+}
+
+.addIcon {
+  width: 36px;
+  height: 36px;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
 }

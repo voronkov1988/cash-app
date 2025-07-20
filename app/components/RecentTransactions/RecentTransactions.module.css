@@ -1,0 +1,167 @@
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.showAllButton {
+  color: #3b82f6;
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.showAllButton:hover {
+  background: #f1f5f9;
+}
+
+.transactionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.transactionItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.transactionItem:last-child {
+  border-bottom: none;
+}
+
+.transactionIcon {
+  width: 40px;
+  height: 40px;
+  background: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.transactionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.transactionDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.transactionMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.separator {
+  color: #cbd5e1;
+}
+
+.category {
+  color: #3b82f6;
+}
+
+.account,
+.user {
+  color: #64748b;
+}
+
+.transactionRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.transactionAmount {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.transactionAmount.income {
+  color: #10b981;
+}
+
+.transactionAmount.expense {
+  color: #ef4444;
+}
+
+.transactionDate {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  color: #64748b;
+}
+
+.emptyText > div:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.emptyText > div:last-child {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .transactionItem {
+    gap: 12px;
+  }
+
+  .transactionIcon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .transactionMeta {
+    flex-wrap: wrap;
+  }
+}

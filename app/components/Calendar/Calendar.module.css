@@ -1,0 +1,291 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.navButton:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+}
+
+.monthTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  min-width: 200px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.weekHeader {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 16px;
+}
+
+.weekDay {
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e2e8f0;
+}
+
+.emptyDay {
+  background: #f8fafc;
+  min-height: 120px;
+}
+
+.day {
+  background: white;
+  min-height: 120px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.day:hover {
+  background: #f8fafc;
+}
+
+.day.today {
+  background: #eff6ff;
+}
+
+.day.selected {
+  background: #dbeafe;
+  border: 2px solid #3b82f6;
+}
+
+.dayNumber {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.dayData {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.income {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.expenses {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.transactionCount {
+  color: #64748b;
+  font-size: 10px;
+  margin-top: auto;
+}
+
+.dayDetails {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.detailsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  text-transform: capitalize;
+}
+
+.detailsStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.transactionsList {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+}
+
+.transactionsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+
+.transactionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.transactionItem:last-child {
+  border-bottom: none;
+}
+
+.transactionIcon {
+  width: 32px;
+  height: 32px;
+  background: #f8fafc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.transactionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.transactionDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.transactionMeta {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.transactionAmount {
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.transactionAmount.income {
+  color: #10b981;
+}
+
+.transactionAmount.expense {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .navigation {
+    order: -1;
+  }
+
+  .daysGrid {
+    gap: 0;
+  }
+
+  .day {
+    min-height: 80px;
+    padding: 4px;
+  }
+
+  .dayNumber {
+    font-size: 14px;
+  }
+
+  .dayData {
+    font-size: 10px;
+  }
+
+  .detailsStats {
+    grid-template-columns: 1fr;
+  }
+}
