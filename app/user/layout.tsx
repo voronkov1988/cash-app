@@ -7,13 +7,12 @@ import Link from "next/link";
 
 const nav = [
   { id: 1, name: 'Главная', url: '/user/profile' },
-  { id: 2, name: 'Категории', url: '/user/categories' }
+  { id: 2, name: 'Категории', url: '/user/categories'}
 ]
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const { user, loading, isInitialized, logout, refreshToken } = useAuth();
   const router = useRouter();
-  console.log(user);
   
   useEffect(() => {
     const checkAuth = async () => {

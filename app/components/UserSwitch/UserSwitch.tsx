@@ -14,6 +14,7 @@ interface UserSwitcherProps {
 
 export function UserSwitch({user}: UserSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [addUser, setAddUser] = useState(false)
 
   useEffect(() => {
     fetch(`/api/user/me`).then(res => res.json()).then(console.log)
@@ -27,11 +28,8 @@ export function UserSwitch({user}: UserSwitcherProps) {
       </button>
       {isOpen && (
         <div className={styles.dropdown}>
-          <div className={styles.dropdownItem}>
-            <span>Переключить пользователя</span>
-          </div>
-          <div className={styles.dropdownItem}>
-            <span>Пригласить пользователя</span>
+          <div onClick={() => setAddUser(!addUser)} className={styles.dropdownItem}>
+            <span>Добавить пользователя</span>
           </div>
           <div className={styles.dropdownItem}>
             <span>Настройки профиля</span>
