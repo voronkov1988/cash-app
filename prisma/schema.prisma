@@ -40,18 +40,14 @@ model RefreshToken {
 }
 
 model Account {
-  id           Int           @id @default(autoincrement())
-  name         String       
-  type         AccountType  
-  balance      Float         @default(0)
-  image        String?
-  user         User          @relation(fields: [userId], references: [id])
-  userId       Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  password    String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
   transactions Transaction[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  @@index([userId])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum AccountType {
@@ -90,17 +86,17 @@ enum CategoryType {
 
 // Финансовые транзакции
 model Transaction {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   amount      Float
-  date        DateTime    @default(now())
+  date        DateTime @default(now())
   description String?
   type        CategoryType
-  account     Account     @relation(fields: [accountId], references: [id])
+  account     Account  @relation(fields: [accountId], references: [id])
   accountId   Int
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
   category    Category?   @relation(fields: [categoryId], references: [id])
   categoryId  Int?
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 

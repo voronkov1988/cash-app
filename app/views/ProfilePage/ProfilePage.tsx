@@ -1,16 +1,19 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import styles from './ProfilePage.module.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
 type TransactionType = "INCOME" | "EXPENSE";
-
 interface Category {
   id: number;
   name: string;
   type: TransactionType;
   color: string;
+}
+
+interface Account {
+  id: number;
+  name: string;
+  // другие поля, если нужны
 }
 
 export const ProfilePage = () => {
@@ -19,21 +22,82 @@ export const ProfilePage = () => {
   const [description, setDescription] = useState("");
   const [accountId, setAccountId] = useState<number | null>(null); // добавьте выбор счета, если нужно
   const [categoryId, setCategoryId] = useState<number | null>(null);
+
+   // Аккаунты и их создание
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [newAccountName, setNewAccountName] = useState("");
+  const [newAccountPassword, setNewAccountPassword] = useState("");
+  const [accountsLoading, setAccountsLoading] = useState(false);
+  const [creatingAccount, setCreatingAccount] = useState(false);
+  const [accountError, setAccountError] = useState<string | null>(null);
   
   const [showForm, setShowForm] = useState(false);
   const [transactionType, setTransactionType] = useState<TransactionType>("EXPENSE");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   // Категории из API
   const [categories, setCategories] = useState<Category[]>([]);
-
   // Загружаем категории при открытии формы
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
   useEffect(() => {
     if (showForm) {
       fetchCategories();
     }
   }, [showForm]);
+
+
+  async function fetchAccounts() {
+    setAccountsLoading(true);
+    setAccountError(null);
+    try {
+      const res = await fetch('/api/accounts');
+      if (!res.ok) throw new Error('Ошибка загрузки аккаунтов');
+      const data = await res.json();
+      setAccounts(data);
+      if (data.length > 0) {
+        setAccountId(data[0].id);
+      }
+    } catch (err: any) {
+      setAccountError(err.message);
+    } finally {
+      setAccountsLoading(false);
+    }
+  }
+
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingAccount(true);
+    setAccountError(null);
+    if(!newAccountName.trim() || !newAccountPassword) {
+      setAccountError("Введите имя и пароль для аккаунта");
+      setCreatingAccount(false);
+      return;
+    }
+    try {
+      const res = await fetch('/api/accounts', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name: newAccountName.trim(), password: newAccountPassword }),
+      });
+      if (!res.ok) {
+        const resErr = await res.json();
+        throw new Error(resErr.error || "Ошибка создания аккаунта");
+      }
+      const createdAccount = await res.json();
+      setAccounts([...accounts, createdAccount]);
+      setAccountId(createdAccount.id);
+      setNewAccountName('');
+      setNewAccountPassword('');
+    } catch (err: any) {
+      setAccountError(err.message);
+    } finally {
+      setCreatingAccount(false);
+    }
+  };
 
   async function fetchCategories() {
     try {
@@ -45,7 +109,6 @@ export const ProfilePage = () => {
       setError(err.message);
     }
   }
-
   // Открыть форму добавления и сбросить поля
   const openForm = (type: TransactionType) => {
     setTransactionType(type);
@@ -56,13 +119,11 @@ export const ProfilePage = () => {
     setCategoryId(null);
     setError(null);
   };
-
   // Отправка формы создания транзакции
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     if (!amount || isNaN(Number(amount))) {
       setError("Введите валидную сумму");
       setLoading(false);
@@ -74,7 +135,6 @@ export const ProfilePage = () => {
       setLoading(false);
       return;
     }
-
     try {
       // Здесь accountId для примера фиксирован, добавьте логику для выбора счета
       const body = {
@@ -91,12 +151,10 @@ export const ProfilePage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
       if (!res.ok) {
         const errData = await res.json();
         throw new Error(errData.error || "Ошибка при добавлении транзакции");
       }
-
       // TODO: Обновить список транзакций или данные баланса, если есть
       setShowForm(false);
     } catch (err: any) {
@@ -105,10 +163,8 @@ export const ProfilePage = () => {
       setLoading(false);
     }
   };
-
   // Фильтруем категории под выбранный тип транзакции
   const filteredCategories = categories.filter(cat => cat.type === transactionType);
-
   // Данные для графика
   const balanceData = [
     { name: 'Дек', income: 80000, expense: 75000, balance: 120000 },
@@ -118,7 +174,6 @@ export const ProfilePage = () => {
     { name: 'Апр', income: 92000, expense: 62000, balance: 192000 },
     { name: 'Май', income: 95000, expense: 68350, balance: 218650 },
   ];
-
   // Категории расходов для отображения в разделе (можете заменить на реальные)
   const expenseCategories = [
     { name: 'Жилые', percentage: 25.5 },
@@ -127,6 +182,45 @@ export const ProfilePage = () => {
     { name: 'Премия', percentage: 7.0 },
     { name: 'Развлечение', percentage: 3.7 },
   ];
+
+if (!accountsLoading && accounts.length === 0) {
+    return (
+      <div className={styles.container}>
+        <h2>Создайте первый аккаунт</h2>
+        <form onSubmit={handleCreateAccount} style={{ maxWidth: '400px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <label>
+              Имя аккаунта:
+              <input
+                type="text"
+                value={newAccountName}
+                onChange={e => setNewAccountName(e.target.value)}
+                required
+                style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+              />
+            </label>
+          </div>
+          <div style={{ marginBottom: '12px' }}>
+            <label>
+              Пароль аккаунта:
+              <input
+                type="password"
+                value={newAccountPassword}
+                onChange={e => setNewAccountPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+              />
+            </label>
+          </div>
+          <button type="submit" disabled={creatingAccount} className={styles.button}>
+            {creatingAccount ? "Создаем..." : "Создать аккаунт"}
+          </button>
+          {accountError && <p style={{color: 'red', marginTop: '8px'}}>{accountError}</p>}
+        </form>
+      </div>
+    );
+  }
+
 
   return (
     <div className={styles.container}>
@@ -138,7 +232,6 @@ export const ProfilePage = () => {
           <span className={styles.trialDays}>Осталось 20 дней</span>
         </div>
       </header>
-
       {/* Блок кнопок добавления */}
       <div style={{ marginBottom: 16, display: "flex", gap: "12px" }}>
         <button className={styles.button} onClick={() => openForm("INCOME")}>
@@ -148,12 +241,40 @@ export const ProfilePage = () => {
           Добавить расход
         </button>
       </div>
-
+      <form onSubmit={handleCreateAccount} style={{ maxWidth: '400px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <label>
+              Имя аккаунта:
+              <input
+                type="text"
+                value={newAccountName}
+                onChange={e => setNewAccountName(e.target.value)}
+                required
+                style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+              />
+            </label>
+          </div>
+          <div style={{ marginBottom: '12px' }}>
+            <label>
+              Пароль аккаунта:
+              <input
+                type="password"
+                value={newAccountPassword}
+                onChange={e => setNewAccountPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+              />
+            </label>
+          </div>
+          <button type="submit" disabled={creatingAccount} className={styles.button}>
+            {creatingAccount ? "Создаем..." : "Создать аккаунт"}
+          </button>
+          {accountError && <p style={{color: 'red', marginTop: '8px'}}>{accountError}</p>}
+        </form>
       {/* Форма добавления транзакции */}
       {showForm && (
         <form onSubmit={handleSubmit} style={{ marginBottom: 24, padding: 16, border: "1px solid #ddd", borderRadius: 8 }}>
           <h3>Новая транзакция ({transactionType === "INCOME" ? "Доход" : "Расход"})</h3>
-
           <div style={{ marginBottom: 12 }}>
             <label>
               Сумма:
@@ -167,7 +288,6 @@ export const ProfilePage = () => {
               />
             </label>
           </div>
-
           <div style={{ marginBottom: 12 }}>
             <label>
               Описание:
@@ -179,7 +299,6 @@ export const ProfilePage = () => {
               />
             </label>
           </div>
-
           <div style={{ marginBottom: 12 }}>
             <label>
               Категория:
@@ -196,7 +315,6 @@ export const ProfilePage = () => {
               </select>
             </label>
           </div>
-
           {/* Опционально: выбор счета */}
           {/* <div style={{ marginBottom: 12 }}>
             <label>
@@ -212,18 +330,15 @@ export const ProfilePage = () => {
               </select>
             </label>
           </div> */}
-
           <button type="submit" disabled={loading} style={{ marginRight: 12 }}>
             {loading ? "Сохраняем..." : "Добавить"}
           </button>
           <button type="button" onClick={() => setShowForm(false)}>
             Отмена
           </button>
-
           {error && <p style={{ color: "red", marginTop: 8 }}>{error}</p>}
         </form>
       )}
-
       {/* Финансовый обзор */}
       <section className={styles.overview}>
         <div className={styles.card}>
@@ -242,7 +357,6 @@ export const ProfilePage = () => {
           <p className={styles.positive}>↑ 5.1% с прошлого месяца</p>
         </div>
       </section>
-
       {/* Основное содержимое */}
       <div className={styles.content}>
         {/* Расходы по категориям */}
@@ -265,7 +379,6 @@ export const ProfilePage = () => {
             ))}
           </div>
         </section>
-
         {/* График динамики баланса */}
         <section className={styles.chartSection}>
           <div className={styles.chartHeader}>
@@ -313,14 +426,12 @@ export const ProfilePage = () => {
           </div>
         </section>
       </div>
-
       {/* Премиум секция */}
       <section className={styles.premiumSection}>
         <button className={styles.premiumButton}>Активировать Премиум</button>
         <h2 className={styles.transactionsTitle}>Последние транзакции</h2>
         {/* Здесь будет компонент таблицы транзакций */}
       </section>
-
       {/* Отображение категорий внизу страницы */}
       <section style={{ marginTop: 40 }}>
         <h2>Транзакции</h2>
