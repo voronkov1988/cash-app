@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
-import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AccountProvider } from "./context/AccountContext";
+import { SWRProvider } from "./lib/swrConfig";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,11 +29,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AntdRegistry>
-          <AuthProvider>
-            <AccountProvider>{children}</AccountProvider>
+        <SWRProvider >
+            <AuthProvider>
+              <AccountProvider>{children}</AccountProvider>
             </AuthProvider>
-        </AntdRegistry>
+        </SWRProvider>
       </body>
     </html>
   );

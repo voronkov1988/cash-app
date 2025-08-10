@@ -1,0 +1,49 @@
+.chartSection {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chartHeader h2 {
+  font-size: 18px;
+}
+
+.chartContainer {
+  height: 280px;
+}
+
+.chartLegend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.income {
+  background-color: #10B981;
+}
+
+.expense {
+  background-color: #EF4444;
+}
+
+.balance {
+  background-color: #3B82F6;
+}

@@ -1,0 +1,281 @@
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px 0;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.icon {
+  font-size: 2.2rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 400;
+}
+
+.accountsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.accountCard {
+  background: white;
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.accountCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.accountCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  border-color: #3498db;
+}
+
+.accountCard:hover::before {
+  transform: scaleX(1);
+}
+
+.accountCard.active {
+  border-color: #27ae60;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+
+.accountCard.active::before {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  transform: scaleX(1);
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.accountCard:hover .avatar {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.accountCard.active .avatar {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.avatarIcon {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.accountName {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+}
+
+.accountHint {
+  color: #7f8c8d;
+  margin: 0 0 20px 0;
+  font-size: 0.95rem;
+}
+
+.activeBadge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.loginButton {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.accountCard:hover .loginButton {
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  transform: scale(1.05);
+}
+
+.accountCard.active .loginButton {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 80px 40px;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+}
+
+.emptyIcon {
+  font-size: 5rem;
+  margin-bottom: 30px;
+  animation: bounce 2s infinite;
+}
+
+.emptyTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+.emptyText {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.createButtonContainer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.createButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  padding: 15px 40px !important;
+  border-radius: 30px !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+}
+
+.createButton:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4) !important;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .accountsGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .accountCard {
+    padding: 28px 20px;
+  }
+  
+  .emptyState {
+    padding: 60px 30px;
+  }
+  
+  .emptyTitle {
+    font-size: 1.8rem;
+  }
+  
+  .emptyText {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.6rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .accountCard {
+    padding: 24px 16px;
+  }
+  
+  .avatar {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .avatarIcon {
+    font-size: 2rem;
+  }
+  
+  .accountName {
+    font-size: 1.2rem;
+  }
+  
+  .emptyIcon {
+    font-size: 4rem;
+  }
+  
+  .emptyTitle {
+    font-size: 1.5rem;
+  }
+}

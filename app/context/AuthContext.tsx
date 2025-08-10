@@ -51,13 +51,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (res.status === 401) {
-        // Пробуем обновить токен
         const refreshed = await refreshToken();
         if (refreshed) {
           await checkUser();
           return;
         }
-        // throw new Error('Сессия истекла');
       }
       
       if (res.ok) {
@@ -78,7 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     checkUser();
 
-    // Интервал для проверки активности сессии
     const interval = setInterval(() => {
       checkUser().catch(console.error);
     }, 5 * 60 * 1000); // Проверка каждые 5 минут

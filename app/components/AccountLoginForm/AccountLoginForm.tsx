@@ -13,11 +13,10 @@ export const AccountLoginForm = ({ onSuccess, id }: { onSuccess: (acc: Account) 
     setLoading(true);
     setError(null);
     try {
-      // Вызываем API логина аккаунта
       const res = await fetch("/api/accounts/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, password, /* userId из контекста user */ }),
+        body: JSON.stringify({ name, password}),
       });
 
       if (!res.ok) {

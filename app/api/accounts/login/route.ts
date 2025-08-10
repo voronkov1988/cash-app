@@ -15,7 +15,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Отсутствуют данные для входа в аккаунт" }, { status: 400 });
     }
 
-    // Поиск аккаунта пользователя
     const account = await prisma.account.findFirst({
       where: { name, userId },
     });
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Неверный пароль аккаунта" }, { status: 401 });
     }
 
-    // Создание JWT для аккаунта (опционально)
     const accountToken = jwt.sign(
       { accountId: account.id, userId },
       JWT_ACCOUNT_SECRET,
@@ -39,17 +37,6 @@ export async function POST(request: Request) {
     const { password: _, ...accountSafe } = account;
 
     const response = NextResponse.json({ account: accountSafe, token: accountToken });
-
-    // Можно записать токен в cookie, если нужно, например:
-    /*
-    response.cookies.set("accountToken", accountToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      sameSite: "lax",
-      maxAge: 60 * 60,
-    });
-    */
 
     return response;
   } catch (error) {
