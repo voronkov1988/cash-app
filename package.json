@@ -9,16 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/nextjs-registry": "^1.0.2",
     "@prisma/client": "^6.10.1",
-    "antd": "^5.26.3",
     "bcrypt": "^6.0.0",
+    "bootstrap": "^5.3.7",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.4",
     "nodemailer": "^7.0.4",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.0.0",
-    "recharts": "^3.0.2"
+    "recharts": "^3.0.2",
+    "swr": "^2.3.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

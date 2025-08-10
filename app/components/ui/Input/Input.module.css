@@ -1,0 +1,43 @@
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.input::placeholder {
+  color: #95a5a6;
+}
+
+.withIcon {
+  padding-left: 48px;
+}
+
+.icon {
+  position: absolute;
+  left: 16px;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  z-index: 1;
+}
+
+.input:focus + .icon,
+.input:not(:placeholder-shown) + .icon {
+  color: #3498db;
+}
