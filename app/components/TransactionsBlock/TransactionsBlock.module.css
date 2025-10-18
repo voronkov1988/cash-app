@@ -343,3 +343,37 @@
     font-size: 3rem;
   }
 }
+
+/* TransactionsBlock.module.css - добавьте эти стили */
+
+.transactionItem {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.transactionRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transactionActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actionButton {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.actionButton:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}

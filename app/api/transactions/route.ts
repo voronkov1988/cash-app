@@ -36,8 +36,6 @@ export async function GET(request: Request) {
     const endDate = searchParams.get('endDate');
     const type = searchParams.get('type');
 
-    console.log('Получены параметры:', { accountId, limit, startDate, endDate, type });
-
     const where: any = {};
         
     if (accountId) where.accountId = Number(accountId);
@@ -52,7 +50,6 @@ export async function GET(request: Request) {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
         where.date.gte = start;
-        console.log('Start date:', start.toISOString());
       }
       
       if (endDate) {
@@ -60,11 +57,8 @@ export async function GET(request: Request) {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
         where.date.lte = end;
-        console.log('End date:', end.toISOString());
       }
     }
-
-    console.log('WHERE условие:', JSON.stringify(where, null, 2));
 
     const transactions = await prisma.transaction.findMany({
       where,
@@ -89,8 +83,6 @@ export async function GET(request: Request) {
         },
       },
     });
-
-    console.log(`Найдено транзакций: ${transactions.length}`);
 
     return NextResponse.json(transactions);
   } catch (error) {

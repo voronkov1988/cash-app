@@ -171,7 +171,6 @@ export const updateTransaction = async (id: number, data: Partial<CreateTransact
 
     const result = await response.json();
     
-    // Обновляем кэш SWR
     mutate(swrKeys.transactions);
     if (data.accountId) {
       mutate(`${swrKeys.transactions}?accountId=${data.accountId}`);
@@ -185,9 +184,7 @@ export const updateTransaction = async (id: number, data: Partial<CreateTransact
   }
 };
 
-/**
- * Удаляет транзакцию
- */
+
 export const deleteTransaction = async (id: number, accountId?: number): Promise<void> => {
   try {
     const response = await fetch(`/api/transactions/${id}`, {
@@ -199,7 +196,6 @@ export const deleteTransaction = async (id: number, accountId?: number): Promise
       throw new Error(errorData.error || "Ошибка при удалении транзакции");
     }
     
-    // Обновляем кэш SWR
     mutate(swrKeys.transactions);
     if (accountId) {
       mutate(`${swrKeys.transactions}?accountId=${accountId}`);
@@ -211,9 +207,7 @@ export const deleteTransaction = async (id: number, accountId?: number): Promise
   }
 };
 
-/**
- * Получает статистику по транзакциям
- */
+
 export const fetchTransactionStats = async (accountId: number, period?: 'day' | 'week' | 'month' | 'year') => {
   try {
     const params = new URLSearchParams();
@@ -234,7 +228,5 @@ export const fetchTransactionStats = async (accountId: number, period?: 'day' | 
   }
 };
 
-/**
- * Хук для использования с SWR
- */
+
 export const transactionsFetcher = (url: string) => fetch(url).then(res => res.json());

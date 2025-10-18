@@ -28,7 +28,7 @@ model User {
   refreshTokens     RefreshToken[]
 }
 
-// Счета пользователя (банковские, наличные и т.д.)
+// Семейные аккаунты
 model Account {
   id          Int      @id @default(autoincrement())
   name        String
@@ -71,6 +71,7 @@ model Category {
   icon          String?       
   user          User          @relation(fields: [userId], references: [id])
   userId        Int
+  limit         Int           @default(0)
   transactions  Transaction[]
   budgets       Budget[]
   parent        Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
@@ -131,7 +132,7 @@ model Goal {
   targetAmount Float
   currentAmount Float     @default(0)
   targetDate  DateTime?
-  icon        String?     // Иконка для UI
+  icon        String?    
   color       String      @default("#8B5CF6")
   user        User        @relation(fields: [userId], references: [id])
   userId      Int
@@ -144,11 +145,11 @@ model Goal {
 // Кредиты и займы
 model Loan {
   id            Int       @id @default(autoincrement())
-  name          String    // Ипотека, Автокредит...
-  amount        Float     // Сумма кредита
-  interestRate  Float     // Процентная ставка
-  term          Int       // Срок в месяцах
-  monthlyPayment Float    // Ежемесячный платеж
+  name          String    
+  amount        Float     
+  interestRate  Float     
+  term          Int       
+  monthlyPayment Float   
   startDate     DateTime
   endDate       DateTime
   user          User      @relation(fields: [userId], references: [id])
@@ -162,11 +163,11 @@ model Loan {
 // Инвестиции и вклады
 model Investment {
   id            Int         @id @default(autoincrement())
-  name          String      // Вклад Сбербанк, Портфель акций...
+  name          String     
   type          InvestmentType
-  amount        Float       // Инвестированная сумма
-  currentValue  Float?      // Текущая стоимость
-  interestRate  Float?      // Процентная ставка (для депозитов)
+  amount        Float      
+  currentValue  Float?      
+  interestRate  Float?      
   startDate     DateTime
   endDate       DateTime?
   user          User        @relation(fields: [userId], references: [id])
@@ -178,9 +179,9 @@ model Investment {
 }
 
 enum InvestmentType {
-  DEPOSIT      // Банковский вклад
-  STOCKS       // Фондовый рынок
-  CRYPTO       // Криптовалюты
-  REAL_ESTATE  // Недвижимость
+  DEPOSIT      
+  STOCKS       
+  CRYPTO       
+  REAL_ESTATE  
   OTHER
 }

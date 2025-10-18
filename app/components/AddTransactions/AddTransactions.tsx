@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { swrKeys } from '@/app/constants/swrKeys';
 import { fetchCategories } from '@/app/utils/categoriesApi';
 import styles from './AddTransactions.module.css';
@@ -15,7 +15,7 @@ interface Category {
     color: string;
 }
 
-export const AddTransactions = ({ userId, accId }: any) => {
+export const AddTransactions = ({ userId, accId, categories, onTransactionAdded  }: any) => {
     const [isOpenIncome, setIsOpenIncome] = useState(false);
     const [isOpenExpense, setIsOpenExpense] = useState(false);
     const [transactionType, setTransactionType] = useState<TransactionType>("EXPENSE");
@@ -25,10 +25,9 @@ export const AddTransactions = ({ userId, accId }: any) => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data: categories } = useSWR<Category[]>(swrKeys.categories, fetchCategories);
-    const filteredCategories = categories?.filter(cat => cat.type === transactionType) || [];
+    const filteredCategories: Category[] = categories?.filter((cat: Category) => cat.type === transactionType) || [];
     
-    const handleSubmit = async (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
@@ -50,8 +49,6 @@ export const AddTransactions = ({ userId, accId }: any) => {
                 categoryId: categoryId,
             };
 
-            console.log(body)
-
             const res = await fetch("/api/transactions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -62,8 +59,19 @@ export const AddTransactions = ({ userId, accId }: any) => {
                 const errData = await res.json();
                 throw new Error(errData.error || "Ошибка при добавлении транзакции");
             }
-            transactionType === "INCOME" ? setIsOpenIncome(false) : setIsOpenExpense(false);
 
+            // Перевалидируем ВСЕ связанные данные
+            await Promise.all([
+                mutate(`${swrKeys.categories}?userId=${userId}`),
+                mutate((key) => Array.isArray(key) && key[0] === swrKeys.transactions),
+            ]);
+
+            // Вызываем колбэк если передан
+            if (onTransactionAdded) {
+                onTransactionAdded();
+            }
+
+            transactionType === "INCOME" ? setIsOpenIncome(false) : setIsOpenExpense(false);
             setAmount("");
             setDescription("");
             setCategoryId(null);

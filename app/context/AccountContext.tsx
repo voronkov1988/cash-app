@@ -1,5 +1,9 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { setUser } from "../store/userSlice";
 
 interface Account {
   id: number;
@@ -7,40 +11,23 @@ interface Account {
 }
 
 interface AccountContextValue {
-  account: Account | null;
+  user: Account | null;
   setAccount: (acc: Account | null) => void;
 }
 
 const AccountContext = createContext<AccountContextValue | undefined>(undefined);
 
 export const AccountProvider = ({ children }: { children: React.ReactNode }) => {
-  const [account, setAccountState] = useState<Account | null>(null);
-
-  // При загрузке проверяем localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("currentAccount");
-    if (stored) {
-      try {
-        const parsed: Account = JSON.parse(stored);
-        setAccountState(parsed);
-      } catch (e) {
-        localStorage.removeItem("currentAccount");
-      }
-    }
-  }, []);
+  const dispatch = useAppDispatch()
+  const user = useAppSelector(state => state.user.currentUser)
 
   const setAccount = (acc: Account | null) => {
-    if (acc) {
-      localStorage.setItem("currentAccount", JSON.stringify(acc));
-      setAccountState(acc);
-    } else {
-      localStorage.removeItem("currentAccount");
-      setAccountState(null);
-    }
+    if (acc) dispatch(setUser(acc))
+    else dispatch(setUser({}))
   };
 
   return (
-    <AccountContext.Provider value={{ account, setAccount }}>
+    <AccountContext.Provider value={{ user, setAccount }}>
       {children}
     </AccountContext.Provider>
   );

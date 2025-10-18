@@ -4,9 +4,11 @@ import type { SWRConfiguration } from 'swr'
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
+
+
 const swrConfig: SWRConfiguration = {
   fetcher,
-  refreshInterval: 100000,
+  refreshInterval: 0,
   revalidateOnFocus: true,
 }
 

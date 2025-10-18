@@ -9,7 +9,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
   try {
     const data = await request.json();
-    const { name, type, color } = data;
+    const { name, type, color, limit } = data;
 
     if (!name || !type || !color) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -17,7 +17,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const updatedCategory = await prisma.category.update({
       where: { id },
-      data: { name, type, color },
+      data: { name, type, color, limit },
     });
 
     return NextResponse.json(updatedCategory);

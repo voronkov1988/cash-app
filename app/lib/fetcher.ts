@@ -1,17 +1,17 @@
-class ApiError extends Error {
-  data?: any
-  constructor(message: string) {
-    super(message)
-    this.name = 'ApiError'
-  }
-}
+// class ApiError extends Error {
+//   data?: any
+//   constructor(message: string) {
+//     super(message)
+//     this.name = 'ApiError'
+//   }
+// }
 
-type FetcherOptions = {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-  headers?: Record<string, string>
-  body?: BodyInit | object
-  credentials?: 'include' | 'omit' | 'same-origin'
-}
+// type FetcherOptions = {
+//   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+//   headers?: Record<string, string>
+//   body?: BodyInit | object
+//   credentials?: 'include' | 'omit' | 'same-origin'
+// }
 
 export const fetcher = async <T = any>(
   url: string,

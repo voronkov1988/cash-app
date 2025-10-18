@@ -16,6 +16,10 @@ body {
   overflow-x: hidden;
 }
 
+h2 {
+  font-size: 1.2rem!important;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

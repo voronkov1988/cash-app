@@ -3,41 +3,83 @@
 import React, { useEffect, useState } from "react";
 import styles from "./CategoriesPage.module.css";
 import { addCategories, fetchCategories } from "@/app/utils/categoriesApi";
+import useSWR from "swr";
+import { useAppSelector } from "@/app/hooks/useAppSelector";
+import { swrKeys } from "@/app/constants/swrKeys";
+import { fetcher } from "@/app/lib/fetcher";
 
 interface Category {
     id: number;
     name: string;
     type: "INCOME" | "EXPENSE";
     color: string;
+    limit: number;
     icon?: string | null;
-    parentId?: number | null;
 }
 
 export const CategoriesPage = () => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const user = useAppSelector(state => state.user.currentUser.account.userId);
 
-    // Для создания
-    const [newName, setNewName] = useState("");
-    const [newType, setNewType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
-    const [newColor, setNewColor] = useState("#6B7280");
+    const { data: categories, mutate } = useSWR<Category[]>(
+        user ? [swrKeys.categories, { userId: user }] : null,
+        ([url, params]: any) => fetcher(url, params)
+    );
+
+    // Состояние для создания категории - limit теперь number | null
+    const [createCategory, setCreateCategory] = useState({
+        name: '',
+        type: 'EXPENSE' as "INCOME" | "EXPENSE",
+        color: '#6B7280',
+        limit: null as number | null
+    });
+
+    // Состояние для редактирования категории
+    const [editCategory, setEditCategory] = useState({
+        id: null as number | null,
+        name: '',
+        type: 'EXPENSE' as "INCOME" | "EXPENSE",
+        color: '#6B7280',
+        limit: null as number | null
+    });
+
     const [submitting, setSubmitting] = useState(false);
-
-    // Для редактирования
-    const [editId, setEditId] = useState<number | null>(null);
-    const [editName, setEditName] = useState("");
-    const [editType, setEditType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
-    const [editColor, setEditColor] = useState("#6B7280");
     const [editLoading, setEditLoading] = useState(false);
 
-    useEffect(() => {
-        getCategories()
-    }, []);
+    // Обработчики изменения полей создания
+    const handleCreateChange = (field: keyof typeof createCategory, value: string | number | null) => {
+        setCreateCategory(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
 
-    const getCategories = async () => {
-        fetchCategories().then(res => setCategories(res))
-    }
+    // Обработчики изменения полей редактирования
+    const handleEditChange = (field: keyof Omit<typeof editCategory, 'id'>, value: string | number | null) => {
+        setEditCategory(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Обработчик изменения лимита для создания (специальный для числа)
+    const handleCreateLimitChange = (value: string) => {
+        // Если поле пустое или содержит только нечисловые символы - устанавливаем null
+        const numValue = value === '' ? null : Number(value);
+        setCreateCategory(prev => ({
+            ...prev,
+            limit: numValue
+        }));
+    };
+
+    // Обработчик изменения лимита для редактирования
+    const handleEditLimitChange = (value: string) => {
+        const numValue = value === '' ? null : Number(value);
+        setEditCategory(prev => ({
+            ...prev,
+            limit: numValue
+        }));
+    };
 
     // Добавление категории
     const handleAdd = async (e: React.FormEvent) => {
@@ -46,12 +88,22 @@ export const CategoriesPage = () => {
         setError(null);
 
         try {
-            addCategories({ name: newName, type: newType, color: newType === 'EXPENSE' ? 'red' : 'blue' })
-                .then(() => getCategories())
-             
-            setNewName("");
-            setNewType("EXPENSE");
-            setNewColor("#6B7280");
+            await addCategories({
+                name: createCategory.name,
+                type: createCategory.type,
+                color: createCategory.type === 'EXPENSE' ? 'red' : 'blue',
+                limit: createCategory.type === 'EXPENSE' ? createCategory.limit : null
+            });
+
+            await mutate();
+
+            // Сброс формы создания
+            setCreateCategory({
+                name: '',
+                type: 'EXPENSE',
+                color: '#6B7280',
+                limit: null
+            });
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -61,42 +113,50 @@ export const CategoriesPage = () => {
 
     // Начать редактирование
     const startEdit = (category: Category) => {
-        setEditId(category.id);
-        setEditName(category.name);
-        setEditType(category.type);
+        setEditCategory({
+            id: category.id,
+            name: category.name,
+            type: category.type,
+            color: category.color,
+            limit: category.limit
+        });
     };
 
     // Отменить редактирование
     const cancelEdit = () => {
-        setEditId(null);
+        setEditCategory({
+            id: null,
+            name: '',
+            type: 'EXPENSE',
+            color: '#6B7280',
+            limit: null
+        });
         setError(null);
     };
 
     // Сохранить редактирование
     const saveEdit = async () => {
-        if (editId === null) return;
+        if (editCategory.id === null) return;
         setEditLoading(true);
         setError(null);
 
         try {
-            const res = await fetch(`/api/categories/${editId}`, {
+            const res = await fetch(`/api/categories/${editCategory.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: editName,
-                    type: editType,
-                    color: editColor,
+                    name: editCategory.name,
+                    type: editCategory.type,
+                    color: editCategory.color,
+                    limit: editCategory.limit
                 }),
             });
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.error || "Ошибка при обновлении категории");
             }
-            const updated = await res.json();
-            setCategories((cats) =>
-                cats.map((c) => (c.id === editId ? updated : c))
-            );
-            setEditId(null);
+            await mutate();
+            cancelEdit();
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -115,7 +175,7 @@ export const CategoriesPage = () => {
                 const err = await res.json();
                 throw new Error(err.error || "Ошибка при удалении категории");
             }
-            setCategories((cats) => cats.filter((c) => c.id !== id));
+            await mutate();
         } catch (err: any) {
             setError(err.message);
         }
@@ -127,25 +187,36 @@ export const CategoriesPage = () => {
 
             <form onSubmit={handleAdd} className={styles.form}>
                 <label>
-                    Название категории:
-                    <input
-                        type="text"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        required
-                    />
-                </label>
-
-                <label>
                     Тип:
                     <select
-                        value={newType}
-                        onChange={(e) => setNewType(e.target.value as any)}
+                        value={createCategory.type}
+                        onChange={(e) => handleCreateChange('type', e.target.value as "INCOME" | "EXPENSE")}
                     >
                         <option value="EXPENSE">Расход</option>
                         <option value="INCOME">Доход</option>
                     </select>
                 </label>
+
+                <label>
+                    Название категории:
+                    <input
+                        type="text"
+                        value={createCategory.name}
+                        onChange={(e) => handleCreateChange('name', e.target.value)}
+                        required
+                    />
+                </label>
+                {createCategory.type === 'EXPENSE' && (
+                    <label>
+                        Лимит в месяц:
+                        <input
+                            type="number"
+                            value={createCategory.limit === null ? '' : createCategory.limit}
+                            onChange={(e) => handleCreateLimitChange(e.target.value)}
+                            placeholder="Введите лимит"
+                        />
+                    </label>
+                )}
                 <button type="submit" className={styles.button} disabled={submitting}>
                     {submitting ? "Добавляем..." : "Добавить категорию"}
                 </button>
@@ -154,21 +225,30 @@ export const CategoriesPage = () => {
             {error && <p className={styles.error}>{error}</p>}
 
             <ul className={styles.categoryList}>
-                {categories.map((category) => (
+                {categories?.map((category) => (
                     <li key={category.id} className={styles.categoryItem}>
-                        {editId === category.id ? (
+                        {editCategory.id === category.id ? (
                             <div className={styles.editForm}>
                                 <input
                                     className={styles.editInput}
                                     type="text"
-                                    value={editName}
-                                    onChange={(e) => setEditName(e.target.value)}
+                                    value={editCategory.name}
+                                    onChange={(e) => handleEditChange('name', e.target.value)}
                                     required
                                 />
+                                {editCategory.type === 'EXPENSE' && (
+                                    <input
+                                        className={styles.editInput}
+                                        type="number"
+                                        value={editCategory.limit === null ? '' : editCategory.limit}
+                                        onChange={(e) => handleEditLimitChange(e.target.value)}
+                                        placeholder="Введите лимит"
+                                    />
+                                )}
                                 <select
                                     className={styles.editInput}
-                                    value={editType}
-                                    onChange={(e) => setEditType(e.target.value as any)}
+                                    value={editCategory.type}
+                                    onChange={(e) => handleEditChange('type', e.target.value as "INCOME" | "EXPENSE")}
                                 >
                                     <option value="EXPENSE">Расход</option>
                                     <option value="INCOME">Доход</option>
@@ -200,8 +280,13 @@ export const CategoriesPage = () => {
                                     <div>
                                         <div className={styles.categoryName}>{category.name}</div>
                                         <div className={styles.categoryType}>
-                                            {category.type.toLowerCase() === 'income' ? 'Доход' : 'Расход'}
+                                            {category.type === 'INCOME' ? 'Доход' : 'Расход'}
                                         </div>
+                                        {category.type !== 'INCOME' && category.limit !== null && (
+                                            <div className={styles.categoryLimit}>
+                                                Лимит: {category.limit}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className={styles.actionButtons}>
@@ -227,4 +312,4 @@ export const CategoriesPage = () => {
             </ul>
         </div>
     );
-}
+};

@@ -62,7 +62,9 @@ export const UsersBlock = ({
                 loginData.password,
                 userId
             )
+            
             setAccount(account)
+            
             setShowLoginModal(false)
             setLoginData({ name: '', password: '' })
         } catch (err) {

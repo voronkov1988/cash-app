@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AccountProvider } from "./context/AccountContext";
 import { SWRProvider } from "./lib/swrConfig";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ReduxProvider } from "./providers/ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +30,14 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SWRProvider >
+        <ReduxProvider>
+          <SWRProvider >
             <AuthProvider>
               <AccountProvider>{children}</AccountProvider>
             </AuthProvider>
-        </SWRProvider>
+          </SWRProvider>
+        </ReduxProvider>
+
       </body>
     </html>
   );
