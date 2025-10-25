@@ -17,7 +17,6 @@ export const fetcher = async <T = any>(
   url: string,
   params?: Record<string, any> | [string, Record<string, any>]
 ): Promise<T> => {
-  // Обрабатываем случай, когда params - это массив (как в SWR)
   const [finalUrl, finalParams] = Array.isArray(params) 
     ? [params[0], params[1]]
     : [url, params]

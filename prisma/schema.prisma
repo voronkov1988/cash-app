@@ -16,6 +16,8 @@ model User {
   confirmationToken String?         @unique
   resetToken        String?         @unique
   resetTokenExpiry  DateTime?
+  telegram          String?         
+  phone             String?         
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   accounts          Account[]
@@ -28,15 +30,31 @@ model User {
   refreshTokens     RefreshToken[]
 }
 
-// Семейные аккаунты
 model Account {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   password    String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
   userId      Int
-  role        String   @default("user")
+  role        String    @default("user")
+  email       String?   
+  avatar      File?     @relation(fields: [avatarId], references: [id])
+  avatarId    Int?      @unique  // Добавлено @unique для one-to-one отношения
+  telegram    String?  
+  phone       String?  
   transactions Transaction[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Модель для хранения файлов аватаров Account
+model File {
+  id          Int       @id @default(autoincrement())
+  filename    String    // Оригинальное имя файла
+  path        String    // Путь к файлу на сервере
+  mimetype    String    // MIME-тип файла
+  size        Int       // Размер файла в байтах
+  account     Account?  // Обратная связь с Account
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -52,8 +70,6 @@ model RefreshToken {
   @@index([token])
 }
 
-
-
 enum AccountType {
   CASH
   BANK
@@ -62,7 +78,6 @@ enum AccountType {
   SAVINGS
 }
 
-// Категории транзакций
 model Category {
   id            Int           @id @default(autoincrement())
   name          String       
@@ -89,18 +104,17 @@ enum CategoryType {
   EXPENSE
 }
 
-// Финансовые транзакции
 model Transaction {
   id          Int      @id @default(autoincrement())
   amount      Float
   date        DateTime @default(now())
   description String?
   type        CategoryType
-  account     Account  @relation(fields: [accountId], references: [id])
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   Int
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  category    Category?   @relation(fields: [categoryId], references: [id])
+  category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   categoryId  Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -108,15 +122,14 @@ model Transaction {
   @@index([userId, date])
 }
 
-// Бюджеты по категориям
 model Budget {
   id          Int       @id @default(autoincrement())
   amount      Float
   startDate   DateTime
   endDate     DateTime
-  category    Category  @relation(fields: [categoryId], references: [id])
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId  Int
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -125,7 +138,6 @@ model Budget {
   @@index([userId])
 }
 
-// Финансовые цели
 model Goal {
   id          Int         @id @default(autoincrement())
   name        String
@@ -134,7 +146,7 @@ model Goal {
   targetDate  DateTime?
   icon        String?    
   color       String      @default("#8B5CF6")
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -142,7 +154,6 @@ model Goal {
   @@index([userId])
 }
 
-// Кредиты и займы
 model Loan {
   id            Int       @id @default(autoincrement())
   name          String    
@@ -152,7 +163,7 @@ model Loan {
   monthlyPayment Float   
   startDate     DateTime
   endDate       DateTime
-  user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -160,7 +171,6 @@ model Loan {
   @@index([userId])
 }
 
-// Инвестиции и вклады
 model Investment {
   id            Int         @id @default(autoincrement())
   name          String     
@@ -170,7 +180,7 @@ model Investment {
   interestRate  Float?      
   startDate     DateTime
   endDate       DateTime?
-  user          User        @relation(fields: [userId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

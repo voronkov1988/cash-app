@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { useAppSelector } from "@/app/hooks/useAppSelector";
 import { swrKeys } from "@/app/constants/swrKeys";
 import { fetcher } from "@/app/lib/fetcher";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface Category {
     id: number;
@@ -19,13 +20,15 @@ interface Category {
 
 export const CategoriesPage = () => {
     const [error, setError] = useState<string | null>(null);
-    const user = useAppSelector(state => state.user.currentUser.account.userId);
+    const account = useAppSelector(state => state.user.currentUser);
+    const { user } = useAuth()
 
     const { data: categories, mutate } = useSWR<Category[]>(
-        user ? [swrKeys.categories, { userId: user }] : null,
+        user ? [swrKeys.categories, { userId: user.id }] : null,
         ([url, params]: any) => fetcher(url, params)
     );
-
+    
+    
     // Состояние для создания категории - limit теперь number | null
     const [createCategory, setCreateCategory] = useState({
         name: '',

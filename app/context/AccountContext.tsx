@@ -1,6 +1,5 @@
 'use client'
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { createContext, useContext} from "react";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { setUser } from "../store/userSlice";
@@ -25,6 +24,9 @@ export const AccountProvider = ({ children }: { children: React.ReactNode }) => 
     if (acc) dispatch(setUser(acc))
     else dispatch(setUser({}))
   };
+
+
+  
 
   return (
     <AccountContext.Provider value={{ user, setAccount }}>

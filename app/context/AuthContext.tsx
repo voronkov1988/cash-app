@@ -1,10 +1,15 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: number;
   email: string;
   name: string;
+  avatar?: string;
+  telegram?: string;
+  phone?: string
 };
 
 type AuthContextType = {
@@ -22,6 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const router = useRouter()
+  const account = useAppSelector(state => state.user.currentUser);
+
+  useEffect(() => {
+    if (!account || Object.keys(account).length === 0 || !account.account) {
+      router.push('/user/profile');
+    }
+  }, [account, router]);
 
   const refreshToken = async (): Promise<boolean> => {
     try {
@@ -78,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const interval = setInterval(() => {
       checkUser().catch(console.error);
-    }, 5 * 60 * 1000); // Проверка каждые 5 минут
+    }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
