@@ -1,189 +1,476 @@
-/* components/FinanceTracker/FinanceTracker.module.css */
-.container {
-  max-width: 1200px;
+/* Основной контейнер дашборда */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1F2937;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1E40AF;
-}
-
-.trialBadge {
-  background-color: #EFF6FF;
-  color: #1E40AF;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.trialDays {
-  font-weight: 700;
-  margin-top: 4px;
-}
-
-.nav {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #E5E7EB;
-}
-
-.navItem {
-  background: none;
-  border: none;
-  font-size: 16px;
-  color: #4B5563;
-  cursor: pointer;
-  padding: 5px 10px;
-  transition: color 0.3s;
-}
-
-.navItem:hover {
-  color: #1E40AF;
-}
-
-.content {
+/* Сетка метрик */
+.metricsGrid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 30px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
 }
 
-.expenses {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.expenses h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.expenseList {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.expenseItem {
-  margin-bottom: 10px;
-}
-
-.expenseHeader {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-  font-size: 14px;
-}
-
-.progressBar {
-  height: 8px;
-  background-color: #F3F4F6;
-  border-radius: 4px;
+.metricCard {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+  position: relative;
   overflow: hidden;
 }
 
-.progressFill {
-  height: 100%;
-  background-color: #3B82F6;
-  border-radius: 4px;
+.metricCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--primary-blue-light) 0%, var(--primary-blue-dark) 100%);
 }
 
-.premiumSection {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  text-align: center;
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
-.transactionsTitle {
-  font-size: 18px;
-  text-align: left;
-  margin-top: 20px;
-}
-/* ProfilePage.module.css */
-.filters {
+
+.metricHeader {
   display: flex;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.filters button {
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
-}
-
-.filters button.activeFilter {
-  background: #0070f3;
-  color: white;
-  border-color: #0070f3;
-}
-
-.datePickers {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  margin-bottom: var(--spacing-lg);
 }
 
-.datePickers input {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.transactionsList {
-  list-style: none;
-  padding: 0;
+.metricTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin: 0;
 }
 
-.transactionItem {
+.metricIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
 }
 
-.transactionInfo {
+.balanceIcon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.expenseIcon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.incomeIcon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.budgetIcon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.budgetInfo {
+  margin-bottom: var(--spacing-xs);
+}
+
+.budgetText {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.metricValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  line-height: 1;
+}
+
+.metricChange {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.changePositive {
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.changeNegative {
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Сетка графиков */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+.chartCard {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.chartTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chartDropdown {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chartDropdown:hover {
+  background: var(--border-light);
+}
+
+/* Круговая диаграмма */
+.pieChart {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.pieChartContainer {
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.pieChartSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.pieChartText {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  fill: var(--text-primary);
+}
+
+.chartLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendLine {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.noDataMessage {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: var(--spacing-lg);
+}
+
+/* Линейный график */
+.lineChart {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.chartYAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 200px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.chartArea {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.transactionCategory {
-  font-weight: bold;
+.chartLines {
+  height: 200px;
+  position: relative;
+  margin-bottom: var(--spacing-lg);
 }
 
-.transactionDescription {
-  color: #666;
-  font-size: 0.9em;
+.chartLine {
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  border-radius: 2px;
+  opacity: 0.8;
 }
 
-.transactionAmount .income {
-  color: green;
+.chartLine:nth-child(1) {
+  top: 20%;
 }
 
-.transactionAmount .expense {
-  color: red;
+.chartLine:nth-child(2) {
+  top: 60%;
+}
+
+.chartLine:nth-child(3) {
+  top: 40%;
+}
+
+.chartXAxis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Секция транзакций */
+.transactionsSection {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.showAllButton {
+  background: none;
+  border: none;
+  color: var(--primary-blue-light);
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.showAllButton:hover {
+  background: var(--bg-secondary);
+}
+
+.transactionsList {
+  /* Стили для TransactionsBlock будут применены автоматически */
+}
+
+/* Секция добавления транзакций */
+.addTransactionSection {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+}
+
+/* Адаптивный дизайн */
+@media (max-width: 1200px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pieChart {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .chartLegend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    gap: var(--spacing-lg);
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricCard {
+    padding: var(--spacing-lg);
+  }
+  
+  .metricValue {
+    font-size: 2rem;
+  }
+  
+  .chartCard {
+    padding: var(--spacing-lg);
+  }
+  
+  .pieChartPlaceholder {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .pieChartCenter {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .pieChartText {
+    font-size: 0.8rem;
+  }
+  
+  .transactionsSection,
+  .addTransactionSection {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .metricCard {
+    padding: var(--spacing-md);
+  }
+  
+  .metricValue {
+    font-size: 1.75rem;
+  }
+  
+  .chartCard {
+    padding: var(--spacing-md);
+  }
+  
+  .pieChartPlaceholder {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .pieChartCenter {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .pieChartText {
+    font-size: 0.7rem;
+  }
+  
+  .chartLegend {
+    gap: var(--spacing-sm);
+  }
+  
+  .legendItem {
+    font-size: 0.8rem;
+  }
+  
+  .transactionsSection,
+  .addTransactionSection {
+    padding: var(--spacing-md);
+  }
 }

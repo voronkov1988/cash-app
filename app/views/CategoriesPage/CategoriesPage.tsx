@@ -186,133 +186,230 @@ export const CategoriesPage = () => {
 
     return (
         <div className={styles.container}>
-            <h1>Категории</h1>
+            {/* Заголовок страницы */}
+            <div className={styles.header}>
+                <div className={styles.headerContent}>
+                    <div className={styles.titleSection}>
+                        <span className={styles.titleIcon}>📂</span>
+                        <h1 className={styles.title}>Категории</h1>
+                    </div>
+                    <p className={styles.subtitle}>
+                        Управляйте категориями доходов и расходов
+                    </p>
+                </div>
+            </div>
 
-            <form onSubmit={handleAdd} className={styles.form}>
-                <label>
-                    Тип:
-                    <select
-                        value={createCategory.type}
-                        onChange={(e) => handleCreateChange('type', e.target.value as "INCOME" | "EXPENSE")}
-                    >
-                        <option value="EXPENSE">Расход</option>
-                        <option value="INCOME">Доход</option>
-                    </select>
-                </label>
+            {/* Форма создания категории */}
+            <div className={styles.createCard}>
+                <div className={styles.cardHeader}>
+                    <span className={styles.cardIcon}>➕</span>
+                    <h2 className={styles.cardTitle}>Создать новую категорию</h2>
+                </div>
+                
+                <form onSubmit={handleAdd} className={styles.form}>
+                    <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>
+                                <span className={styles.labelIcon}>📊</span>
+                                Тип категории
+                            </label>
+                            <select
+                                className={styles.select}
+                                value={createCategory.type}
+                                onChange={(e) => handleCreateChange('type', e.target.value as "INCOME" | "EXPENSE")}
+                            >
+                                <option value="EXPENSE">📉 Расход</option>
+                                <option value="INCOME">📈 Доход</option>
+                            </select>
+                        </div>
 
-                <label>
-                    Название категории:
-                    <input
-                        type="text"
-                        value={createCategory.name}
-                        onChange={(e) => handleCreateChange('name', e.target.value)}
-                        required
-                    />
-                </label>
-                {createCategory.type === 'EXPENSE' && (
-                    <label>
-                        Лимит в месяц:
-                        <input
-                            type="number"
-                            value={createCategory.limit === null ? '' : createCategory.limit}
-                            onChange={(e) => handleCreateLimitChange(e.target.value)}
-                            placeholder="Введите лимит"
-                        />
-                    </label>
-                )}
-                <button type="submit" className={styles.button} disabled={submitting}>
-                    {submitting ? "Добавляем..." : "Добавить категорию"}
-                </button>
-            </form>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>
+                                <span className={styles.labelIcon}>🏷️</span>
+                                Название категории
+                            </label>
+                            <input
+                                type="text"
+                                className={styles.input}
+                                value={createCategory.name}
+                                onChange={(e) => handleCreateChange('name', e.target.value)}
+                                placeholder="Введите название категории"
+                                required
+                            />
+                        </div>
+                    </div>
 
-            {error && <p className={styles.error}>{error}</p>}
+                    {createCategory.type === 'EXPENSE' && (
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>
+                                <span className={styles.labelIcon}>💰</span>
+                                Лимит в месяц (₽)
+                            </label>
+                            <input
+                                type="number"
+                                className={styles.input}
+                                value={createCategory.limit === null ? '' : createCategory.limit}
+                                onChange={(e) => handleCreateLimitChange(e.target.value)}
+                                placeholder="Введите лимит (необязательно)"
+                                min="0"
+                                step="100"
+                            />
+                        </div>
+                    )}
 
-            <ul className={styles.categoryList}>
-                {categories?.map((category) => (
-                    <li key={category.id} className={styles.categoryItem}>
-                        {editCategory.id === category.id ? (
-                            <div className={styles.editForm}>
-                                <input
-                                    className={styles.editInput}
-                                    type="text"
-                                    value={editCategory.name}
-                                    onChange={(e) => handleEditChange('name', e.target.value)}
-                                    required
-                                />
-                                {editCategory.type === 'EXPENSE' && (
-                                    <input
-                                        className={styles.editInput}
-                                        type="number"
-                                        value={editCategory.limit === null ? '' : editCategory.limit}
-                                        onChange={(e) => handleEditLimitChange(e.target.value)}
-                                        placeholder="Введите лимит"
-                                    />
-                                )}
-                                <select
-                                    className={styles.editInput}
-                                    value={editCategory.type}
-                                    onChange={(e) => handleEditChange('type', e.target.value as "INCOME" | "EXPENSE")}
-                                >
-                                    <option value="EXPENSE">Расход</option>
-                                    <option value="INCOME">Доход</option>
-                                </select>
-                                <button
-                                    className={styles.editButton}
-                                    onClick={saveEdit}
-                                    disabled={editLoading}
-                                    type="button"
-                                >
-                                    {editLoading ? "Сохраняем..." : "Сохранить"}
-                                </button>
-                                <button
-                                    className={styles.cancelButton}
-                                    onClick={cancelEdit}
-                                    type="button"
-                                >
-                                    Отмена
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className={styles.categoryInfo}>
-                                    <div
-                                        className={styles.colorBox}
-                                        style={{ backgroundColor: category.color }}
-                                        title={category.color}
-                                    />
-                                    <div>
-                                        <div className={styles.categoryName}>{category.name}</div>
-                                        <div className={styles.categoryType}>
-                                            {category.type === 'INCOME' ? 'Доход' : 'Расход'}
+                    <button type="submit" className={styles.submitButton} disabled={submitting}>
+                        <span className={styles.buttonIcon}>
+                            {submitting ? "⏳" : "✨"}
+                        </span>
+                        {submitting ? "Создаем..." : "Создать категорию"}
+                    </button>
+                </form>
+            </div>
+
+            {/* Сообщение об ошибке */}
+            {error && (
+                <div className={styles.errorCard}>
+                    <span className={styles.errorIcon}>⚠️</span>
+                    <p className={styles.errorText}>{error}</p>
+                </div>
+            )}
+
+            {/* Список категорий */}
+            <div className={styles.categoriesSection}>
+                <div className={styles.sectionHeader}>
+                    <span className={styles.sectionIcon}>📋</span>
+                    <h2 className={styles.sectionTitle}>
+                        Ваши категории ({categories?.length || 0})
+                    </h2>
+                </div>
+
+                {categories && categories.length > 0 ? (
+                    <div className={styles.categoriesGrid}>
+                        {categories.map((category) => (
+                            <div key={category.id} className={styles.categoryCard}>
+                                {editCategory.id === category.id ? (
+                                    <div className={styles.editCard}>
+                                        <div className={styles.editHeader}>
+                                            <span className={styles.editIcon}>✏️</span>
+                                            <span className={styles.editTitle}>Редактирование</span>
                                         </div>
-                                        {category.type !== 'INCOME' && category.limit !== null && (
-                                            <div className={styles.categoryLimit}>
-                                                Лимит: {category.limit}
+                                        
+                                        <div className={styles.editForm}>
+                                            <div className={styles.editFormRow}>
+                                                <input
+                                                    className={styles.editInput}
+                                                    type="text"
+                                                    value={editCategory.name}
+                                                    onChange={(e) => handleEditChange('name', e.target.value)}
+                                                    placeholder="Название категории"
+                                                    required
+                                                />
+                                                
+                                                <select
+                                                    className={styles.editSelect}
+                                                    value={editCategory.type}
+                                                    onChange={(e) => handleEditChange('type', e.target.value as "INCOME" | "EXPENSE")}
+                                                >
+                                                    <option value="EXPENSE">📉 Расход</option>
+                                                    <option value="INCOME">📈 Доход</option>
+                                                </select>
                                             </div>
-                                        )}
+                                            
+                                            {editCategory.type === 'EXPENSE' && (
+                                                <input
+                                                    className={styles.editInput}
+                                                    type="number"
+                                                    value={editCategory.limit === null ? '' : editCategory.limit}
+                                                    onChange={(e) => handleEditLimitChange(e.target.value)}
+                                                    placeholder="Лимит в месяц (₽)"
+                                                    min="0"
+                                                    step="100"
+                                                />
+                                            )}
+                                            
+                                            <div className={styles.editActions}>
+                                                <button
+                                                    className={styles.saveButton}
+                                                    onClick={saveEdit}
+                                                    disabled={editLoading}
+                                                    type="button"
+                                                >
+                                                    <span className={styles.buttonIcon}>
+                                                        {editLoading ? "⏳" : "💾"}
+                                                    </span>
+                                                    {editLoading ? "Сохраняем..." : "Сохранить"}
+                                                </button>
+                                                <button
+                                                    className={styles.cancelButton}
+                                                    onClick={cancelEdit}
+                                                    type="button"
+                                                >
+                                                    <span className={styles.buttonIcon}>❌</span>
+                                                    Отмена
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={styles.actionButtons}>
-                                    <button
-                                        className={`${styles.actionButton} ${styles.edit}`}
-                                        onClick={() => startEdit(category)}
-                                        type="button"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        className={`${styles.actionButton} ${styles.delete}`}
-                                        onClick={() => deleteCategory(category.id)}
-                                        type="button"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
+                                ) : (
+                                    <>
+                                        <div className={styles.categoryHeader}>
+                                            <div className={styles.categoryIcon}>
+                                                <div
+                                                    className={styles.colorIndicator}
+                                                    style={{ backgroundColor: category.color }}
+                                                />
+                                                <span className={styles.typeIcon}>
+                                                    {category.type === 'INCOME' ? '📈' : '📉'}
+                                                </span>
+                                            </div>
+                                            <div className={styles.categoryActions}>
+                                                <button
+                                                    className={styles.actionButton}
+                                                    onClick={() => startEdit(category)}
+                                                    type="button"
+                                                    title="Редактировать"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    className={styles.actionButton}
+                                                    onClick={() => deleteCategory(category.id)}
+                                                    type="button"
+                                                    title="Удалить"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className={styles.categoryContent}>
+                                            <h3 className={styles.categoryName}>{category.name}</h3>
+                                            <div className={styles.categoryMeta}>
+                                                <span className={styles.categoryType}>
+                                                    {category.type === 'INCOME' ? 'Доход' : 'Расход'}
+                                                </span>
+                                                {category.type === 'EXPENSE' && category.limit !== null && (
+                                                    <span className={styles.categoryLimit}>
+                                                        Лимит: {category.limit.toLocaleString('ru-RU')} ₽
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📂</div>
+                        <h3 className={styles.emptyTitle}>Нет категорий</h3>
+                        <p className={styles.emptyDescription}>
+                            Создайте первую категорию для организации ваших финансов
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
