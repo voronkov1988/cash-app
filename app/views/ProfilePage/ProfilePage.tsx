@@ -20,9 +20,7 @@ export const ProfilePage = () => {
   const account = useAppSelector(state => state.user.currentUser)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   
-  // console.log(user);
-  
-  const { data: accounts } = useSWR<Account[]>(
+  const { data: accounts, mutate: mutateAccounts } = useSWR<Account[]>(
     user ? `${swrKeys.accounts}?userId=${user.id}` : null, 
     fetcher
   )
@@ -35,15 +33,14 @@ export const ProfilePage = () => {
   const handleTransactionAdded = () => {
     setRefreshTrigger(prev => prev + 1)
   }
-  // console.log(account);
-  
 
   if ((!account.account || !user) && accounts && user) {
     return (
       <UsersBlock 
-        accounts={accounts} 
+        accounts={accounts || []} 
         currentAccount={account} 
         userId={user.id}
+        mutateAccounts={mutateAccounts}
       />
     )
   }
@@ -64,10 +61,6 @@ export const ProfilePage = () => {
         {!loadCategories && categories && <CategoriesBlock categories={categories} />}
       </div>
       
-      {/* <section className={styles.premiumSection}>
-        <button className={styles.premiumButton}>Активировать Премиум</button>
-      </section> */}
-
       <TransactionsBlock accounts={accounts || []} />
     </div>
   )

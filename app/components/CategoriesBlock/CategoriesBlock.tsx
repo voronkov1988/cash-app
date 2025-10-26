@@ -5,13 +5,13 @@ import { Category, CategoryBase } from '@/app/types/categories'
 import { useMemo } from 'react'
 import { fetcher } from '@/app/lib/fetcher'
 
-export const CategoriesBlock = ({ categories }: {categories: Category[]}) => {
-  const getCurrentMonthRange = () => {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return { startOfMonth, endOfMonth };
-  };
+export const CategoriesBlock = ({ categories }: { categories: Category[] }) => {
+    const getCurrentMonthRange = () => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return { startOfMonth, endOfMonth };
+    };
 
     const expenseCategoriesWithProgress = useMemo(() => {
         if (!categories) return [];
@@ -22,7 +22,9 @@ export const CategoriesBlock = ({ categories }: {categories: Category[]}) => {
             .map(category => {
                 const monthlyTransactions = category.transactions?.filter(transaction => {
                     const transactionDate = new Date(transaction.date);
-                    return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
+                    const isInCurrentMonth = transactionDate >= startOfMonth && transactionDate <= endOfMonth;
+                    const isExpense = transaction.type === 'EXPENSE';
+                    return isInCurrentMonth && isExpense;
                 }) || [];
 
                 const monthlySpent = monthlyTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
@@ -41,6 +43,7 @@ export const CategoriesBlock = ({ categories }: {categories: Category[]}) => {
             .sort((a, b) => b.monthlySpent - a.monthlySpent);
     }, [categories]);
 
+
     return (
         <section className={styles.expenses}>
             <h2>Расходы по категориям (текущий месяц)</h2>
@@ -54,8 +57,8 @@ export const CategoriesBlock = ({ categories }: {categories: Category[]}) => {
                             </span>
                         </div>
                         <div className={styles.amountInfo}>
-                            <span>Потрачено: {category.monthlySpent}</span>
-                            {category.hasLimit && <span>Лимит: {category.limit}</span>}
+                            <span>Потрачено: {category.monthlySpent} ₽</span>
+                            {category.hasLimit && <span>Лимит: {category.limit} ₽</span>}
                         </div>
                         {category.hasLimit && (
                             <div className={styles.progressBar}>
@@ -63,7 +66,7 @@ export const CategoriesBlock = ({ categories }: {categories: Category[]}) => {
                                     className={styles.progressFill}
                                     style={{
                                         width: `${category.progressPercent}%`,
-                                        backgroundColor: category.progressPercent > 90 ? '#ef4444' : '#10b981' // Красный если близко к лимиту
+                                        backgroundColor: category.progressPercent > 90 ? '#ef4444' : '#10b981'
                                     }}
                                 />
                             </div>

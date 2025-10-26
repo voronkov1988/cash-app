@@ -11,6 +11,7 @@ import { useAppDispatch } from '@/app/hooks/useAppDispatch'
 import { useAppSelector } from '@/app/hooks/useAppSelector'
 import { resetFilters, setAccountFilter, setDateRangeFilter, setPeriodFilter, setTypeFilter } from '@/app/store/transactionSlice'
 import { fetcher } from '@/app/lib/fetcher'
+import { mutateAllTransactions } from '@/app/utils/mutateTransactions'
 
 interface EditTransactionData {
   amount: number;
@@ -33,7 +34,6 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Подготавливаем параметры для API
   const apiParams = useMemo(() => {
     const params: any = {}
     
@@ -42,10 +42,36 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
     
     if (filters.period && filters.period !== 'custom') {
       const now = new Date()
-      const days = filters.period === '7d' ? 7 : filters.period === '30d' ? 30 : 90
-      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
-      params.startDate = startDate.toISOString().split('T')[0]
-      params.endDate = now.toISOString().split('T')[0]
+      let startDate: Date
+      
+      switch (filters.period) {
+        case 'today':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          params.startDate = startDate.toISOString().split('T')[0]
+          params.endDate = now.toISOString().split('T')[0]
+          break
+        case 'yesterday':
+          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+          startDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate())
+          params.startDate = startDate.toISOString().split('T')[0]
+          params.endDate = startDate.toISOString().split('T')[0]
+          break
+        case '7d':
+          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+          params.startDate = startDate.toISOString().split('T')[0]
+          params.endDate = now.toISOString().split('T')[0]
+          break
+        case '30d':
+          startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+          params.startDate = startDate.toISOString().split('T')[0]
+          params.endDate = now.toISOString().split('T')[0]
+          break
+        case '90d':
+          startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
+          params.startDate = startDate.toISOString().split('T')[0]
+          params.endDate = now.toISOString().split('T')[0]
+          break
+      }
     } else {
       if (filters.startDate) params.startDate = filters.startDate
       if (filters.endDate) params.endDate = filters.endDate
@@ -96,23 +122,32 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
   }
 
   // Функция сохранения изменений
-  const handleSaveEdit = async () => {
-    if (!editingTransaction) return
+const handleSaveEdit = async () => {
+  if (!editingTransaction) return
 
-    setIsSubmitting(true)
-    try {
-      await updateTransaction(editingTransaction.id, editForm)
-      mutate() // Обновляем данные
-      setEditingTransaction(null)
-      setEditForm({ amount: 0, description: '', type: 'EXPENSE', categoryId: 0 })
-    } catch (error) {
-      console.error('Ошибка при обновлении транзакции:', error)
-      alert('Ошибка при обновлении транзакции')
-    } finally {
-      setIsSubmitting(false)
+  setIsSubmitting(true)
+  try {
+    const updateData = {
+      amount: editForm.amount,
+      description: editForm.description,
+      type: editForm.type,
+      categoryId: editForm.categoryId,
+      accountId: editingTransaction.accountId, // обязательное поле
+      userId: editingTransaction.userId // если нужно
     }
-  }
 
+    await updateTransaction(editingTransaction.id, updateData)
+    mutateAllTransactions(editingTransaction.userId)
+    // mutate() 
+    setEditingTransaction(null)
+    setEditForm({ amount: 0, description: '', type: 'EXPENSE', categoryId: 0 })
+  } catch (error) {
+    console.error('Ошибка при обновлении транзакции:', error)
+    alert('Ошибка при обновлении транзакции')
+  } finally {
+    setIsSubmitting(false)
+  }
+}
   // Функция удаления транзакции
   const handleDelete = async () => {
     if (!deleteTransactionId) return
@@ -184,14 +219,122 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
 
           {showFilters && (
             <div className={styles.filtersContainer}>
+              {/* Краткое описание активных фильтров */}
+              {hasActiveFilters && (
+                <div className={styles.activeFiltersSummary}>
+                  <span className={styles.summaryLabel}>Активные фильтры:</span>
+                  <div className={styles.filterTags}>
+                    {filters.accountId && (
+                      <span className={styles.filterTag}>
+                        🏦 {accounts.find(a => a.id === filters.accountId)?.name}
+                        <button 
+                          onClick={() => handleFilterChange('accountId', undefined)}
+                          className={styles.removeTag}
+                        >×</button>
+                      </span>
+                    )}
+                    {filters.type && (
+                      <span className={styles.filterTag}>
+                        {filters.type === 'INCOME' ? '📈 Доходы' : '📉 Расходы'}
+                        <button 
+                          onClick={() => handleFilterChange('type', undefined)}
+                          className={styles.removeTag}
+                        >×</button>
+                      </span>
+                    )}
+                    {filters.period && filters.period !== 'custom' && (
+                      <span className={styles.filterTag}>
+                        📅 {
+                          filters.period === 'today' ? 'Сегодня' :
+                          filters.period === 'yesterday' ? 'Вчера' :
+                          filters.period === '7d' ? '7 дней' :
+                          filters.period === '30d' ? '30 дней' :
+                          filters.period === '90d' ? '90 дней' : filters.period
+                        }
+                        <button 
+                          onClick={() => handleFilterChange('period', undefined)}
+                          className={styles.removeTag}
+                        >×</button>
+                      </span>
+                    )}
+                    {filters.period === 'custom' && (filters.startDate || filters.endDate) && (
+                      <span className={styles.filterTag}>
+                        📅 {filters.startDate || '...'} - {filters.endDate || '...'}
+                        <button 
+                          onClick={() => {
+                            handleFilterChange('period', undefined)
+                            handleFilterChange('startDate', undefined)
+                            handleFilterChange('endDate', undefined)
+                          }}
+                          className={styles.removeTag}
+                        >×</button>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <Row className="g-3">
-                {/* Фильтр по аккаунту */}
-                <Col md={6} lg={3}>
+                {/* Быстрые фильтры по периоду */}
+                <Col xs={12}>
+                  <div className={styles.quickFilters}>
+                    <span className={styles.quickFiltersLabel}>Быстрый выбор:</span>
+                    <div className={styles.quickFilterButtons}>
+                      <Button
+                        variant={filters.period === 'today' ? 'primary' : 'outline-secondary'}
+                        size="sm"
+                        onClick={() => handleFilterChange('period', 'today')}
+                        className={styles.quickFilterBtn}
+                      >
+                        Сегодня
+                      </Button>
+                      <Button
+                        variant={filters.period === 'yesterday' ? 'primary' : 'outline-secondary'}
+                        size="sm"
+                        onClick={() => handleFilterChange('period', 'yesterday')}
+                        className={styles.quickFilterBtn}
+                      >
+                        Вчера
+                      </Button>
+                      <Button
+                        variant={filters.period === '7d' ? 'primary' : 'outline-secondary'}
+                        size="sm"
+                        onClick={() => handleFilterChange('period', '7d')}
+                        className={styles.quickFilterBtn}
+                      >
+                        Неделя
+                      </Button>
+                      <Button
+                        variant={filters.period === '30d' ? 'primary' : 'outline-secondary'}
+                        size="sm"
+                        onClick={() => handleFilterChange('period', '30d')}
+                        className={styles.quickFilterBtn}
+                      >
+                        Месяц
+                      </Button>
+                      <Button
+                        variant={filters.period === '90d' ? 'primary' : 'outline-secondary'}
+                        size="sm"
+                        onClick={() => handleFilterChange('period', '90d')}
+                        className={styles.quickFilterBtn}
+                      >
+                        3 месяца
+                      </Button>
+                    </div>
+                  </div>
+                </Col>
+
+                {/* Основные фильтры */}
+                <Col md={4}>
                   <Form.Group>
-                    <Form.Label>Аккаунт</Form.Label>
+                    <Form.Label className={styles.filterLabel}>
+                      <span className={styles.labelIcon}>🏦</span>
+                      Аккаунт
+                    </Form.Label>
                     <Form.Select
                       value={filters.accountId?.toString() || ''}
                       onChange={(e) => handleFilterChange('accountId', e.target.value ? Number(e.target.value) : undefined)}
+                      className={styles.filterSelect}
                     >
                       <option value="">Все аккаунты</option>
                       {accounts.map((account) => (
@@ -203,30 +346,38 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
                   </Form.Group>
                 </Col>
 
-                {/* Фильтр по типу */}
-                <Col md={6} lg={3}>
+                <Col md={4}>
                   <Form.Group>
-                    <Form.Label>Тип</Form.Label>
+                    <Form.Label className={styles.filterLabel}>
+                      <span className={styles.labelIcon}>📊</span>
+                      Тип операции
+                    </Form.Label>
                     <Form.Select
                       value={filters.type || ''}
                       onChange={(e) => handleFilterChange('type', e.target.value || undefined)}
+                      className={styles.filterSelect}
                     >
                       <option value="">Все типы</option>
-                      <option value="INCOME">Доходы</option>
-                      <option value="EXPENSE">Расходы</option>
+                      <option value="INCOME">📈 Доходы</option>
+                      <option value="EXPENSE">📉 Расходы</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
 
-                {/* Фильтр по периоду */}
-                <Col md={6} lg={3}>
+                <Col md={4}>
                   <Form.Group>
-                    <Form.Label>Период</Form.Label>
+                    <Form.Label className={styles.filterLabel}>
+                      <span className={styles.labelIcon}>📅</span>
+                      Период
+                    </Form.Label>
                     <Form.Select
                       value={filters.period || ''}
                       onChange={(e) => handleFilterChange('period', e.target.value || undefined)}
+                      className={styles.filterSelect}
                     >
                       <option value="">Все время</option>
+                      <option value="today">Сегодня</option>
+                      <option value="yesterday">Вчера</option>
                       <option value="7d">За 7 дней</option>
                       <option value="30d">За 30 дней</option>
                       <option value="90d">За 90 дней</option>
@@ -235,8 +386,42 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
                   </Form.Group>
                 </Col>
 
-                {/* Кнопка очистки */}
-                <Col md={6} lg={3} className="d-flex align-items-end">
+                {/* Кастомные даты */}
+                {filters.period === 'custom' && (
+                  <>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label className={styles.filterLabel}>
+                          <span className={styles.labelIcon}>📅</span>
+                          От
+                        </Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={filters.startDate || ''}
+                          onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                          className={styles.filterInput}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label className={styles.filterLabel}>
+                          <span className={styles.labelIcon}>📅</span>
+                          До
+                        </Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={filters.endDate || ''}
+                          onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                          className={styles.filterInput}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </>
+                )}
+
+                {/* Кнопки управления */}
+                <Col xs={12} className="d-flex justify-content-end gap-2">
                   {hasActiveFilters && (
                     <Button
                       variant="outline-danger"
@@ -244,36 +429,18 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
                       onClick={clearFilters}
                       className={styles.clearButton}
                     >
-                      ❌ Очистить
+                      🗑️ Очистить все
                     </Button>
                   )}
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => setShowFilters(false)}
+                    className={styles.closeButton}
+                  >
+                    ✕ Скрыть
+                  </Button>
                 </Col>
-
-                {/* Кастомные даты */}
-                {filters.period === 'custom' && (
-                  <>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>От</Form.Label>
-                        <Form.Control
-                          type="date"
-                          value={filters.startDate || ''}
-                          onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>До</Form.Label>
-                        <Form.Control
-                          type="date"
-                          value={filters.endDate || ''}
-                          onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </>
-                )}
               </Row>
             </div>
           )}
@@ -386,26 +553,6 @@ export const TransactionsBlock = ({ accounts }: { accounts: Account[] }) => {
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Тип</Form.Label>
-              <Form.Select
-                value={editForm.type}
-                onChange={(e) => setEditForm({...editForm, type: e.target.value as 'INCOME' | 'EXPENSE'})}
-              >
-                <option value="EXPENSE">Расход</option>
-                <option value="INCOME">Доход</option>
-              </Form.Select>
-            </Form.Group>
-
-            {/* Здесь можно добавить выбор категории, если у вас есть список категорий */}
-            <Form.Group className="mb-3">
-              <Form.Label>ID категории</Form.Label>
-              <Form.Control
-                type="number"
-                value={editForm.categoryId}
-                onChange={(e) => setEditForm({...editForm, categoryId: parseInt(e.target.value) || 0})}
-              />
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>

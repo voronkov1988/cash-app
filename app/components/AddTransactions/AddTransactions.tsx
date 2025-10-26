@@ -5,6 +5,7 @@ import useSWR, { mutate } from 'swr';
 import { swrKeys } from '@/app/constants/swrKeys';
 import { fetchCategories } from '@/app/utils/categoriesApi';
 import styles from './AddTransactions.module.css';
+import { mutateAllTransactions } from '@/app/utils/mutateTransactions';
 
 type TransactionType = "INCOME" | "EXPENSE";
 
@@ -60,13 +61,8 @@ export const AddTransactions = ({ userId, accId, categories, onTransactionAdded 
                 throw new Error(errData.error || "Ошибка при добавлении транзакции");
             }
 
-            // Перевалидируем ВСЕ связанные данные
-            await Promise.all([
-                mutate(`${swrKeys.categories}?userId=${userId}`),
-                mutate((key) => Array.isArray(key) && key[0] === swrKeys.transactions),
-            ]);
+            mutateAllTransactions(userId)
 
-            // Вызываем колбэк если передан
             if (onTransactionAdded) {
                 onTransactionAdded();
             }

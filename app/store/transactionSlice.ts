@@ -1,7 +1,7 @@
 // src/features/filters/filtersSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type FilterPeriod = '7d' | '30d' | '90d' | 'custom' | '';
+export type FilterPeriod = 'today' | 'yesterday' | '7d' | '30d' | '90d' | 'custom' | '';
 export type TransactionType = 'INCOME' | 'EXPENSE' | '';
 
 interface FiltersState {

@@ -1,3 +1,4 @@
+// UsersBlock.tsx
 'use client'
 import { useState } from 'react'
 import {
@@ -8,11 +9,8 @@ import {
     Container,
     Spinner
 } from 'react-bootstrap'
-import { mutate } from 'swr'
 import { Account } from '@/app/types/accounts'
-import { fetcher } from '@/app/lib/fetcher'
 import { useAccount } from '@/app/context/AccountContext'
-import { swrKeys } from '@/app/constants/swrKeys'
 import styles from './UsersBlock.module.css'
 import { createAccount, loginAccount } from '@/app/utils/accountsApi'
 
@@ -20,12 +18,14 @@ interface UsersBlockProps {
     accounts: Account[]
     currentAccount: Account | null
     userId: number
+    mutateAccounts: () => void // Функция мутации из SWR
 }
 
 export const UsersBlock = ({
     accounts,
     currentAccount,
-    userId
+    userId,
+    mutateAccounts
 }: UsersBlockProps) => {
     const { setAccount } = useAccount()
     const [formData, setFormData] = useState({
@@ -43,6 +43,7 @@ export const UsersBlock = ({
     const [loginError, setLoginError] = useState<string | null>(null)
     const [validated, setValidated] = useState(false)
     const [isLoggingIn, setIsLoggingIn] = useState(false)
+    const [isCreating, setIsCreating] = useState(false)
 
     const handleAccountClick = (account: Account) => {
         setLoginData({
@@ -85,6 +86,7 @@ export const UsersBlock = ({
             return
         }
 
+        setIsCreating(true)
         try {
             await createAccount(
                 formData.name.trim(),
@@ -92,12 +94,18 @@ export const UsersBlock = ({
                 userId,
                 isFirstAccount
             )
-            mutate(swrKeys.accounts)
+            
+            // Оптимистичное обновление - сразу обновляем кэш SWR
+            await mutateAccounts()
+            
             setFormData({ name: '', password: '', confirmPass: '' })
             setShowCreateModal(false)
             setValidated(false)
+            setError(null)
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Неизвестная ошибка')
+        } finally {
+            setIsCreating(false)
         }
     }
 
@@ -113,7 +121,7 @@ export const UsersBlock = ({
                 </p>
             </div>
 
-            {accounts.length ? (
+            {accounts && accounts.length > 0 ? (
                 <div className={styles.accountsGrid}>
                     {accounts.map(account => (
                         <div 
@@ -153,8 +161,22 @@ export const UsersBlock = ({
                     size="lg"
                     onClick={() => setShowCreateModal(true)}
                     className={styles.createButton}
+                    disabled={isCreating}
                 >
-                    + Создать аккаунт
+                    {isCreating ? (
+                        <>
+                            <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <span className="ms-2">Создание...</span>
+                        </>
+                    ) : (
+                        '+ Создать аккаунт'
+                    )}
                 </Button>
             </div>
 
@@ -214,11 +236,27 @@ export const UsersBlock = ({
                                     setShowCreateModal(false)
                                     setError(null)
                                 }}
+                                disabled={isCreating}
                             >
                                 Отмена
                             </Button>
-                            <Button variant="primary" type="submit">
-                                Создать аккаунт
+                            <Button 
+                                variant="primary" 
+                                type="submit"
+                                disabled={isCreating}
+                            >
+                                {isCreating ? (
+                                    <>
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        />
+                                        <span className="ms-2">Создание...</span>
+                                    </>
+                                ) : 'Создать аккаунт'}
                             </Button>
                         </div>
                     </Form>
@@ -253,6 +291,7 @@ export const UsersBlock = ({
                                     setShowLoginModal(false)
                                     setLoginError(null)
                                 }}
+                                disabled={isLoggingIn}
                             >
                                 Отмена
                             </Button>
